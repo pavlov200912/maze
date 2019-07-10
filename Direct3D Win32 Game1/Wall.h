@@ -27,8 +27,8 @@ public:
 		DirectX::SpriteEffects effects = DirectX::SpriteEffects_None) {
 		Wall wall(orientation, x, y, depth, rotation, origin, scale, effects);
 		for (int i = 0; i < count; i++) {
-			wall.x = (wall.Orientation == HORIZONTAL) ? (x + i * mVerticalWallTexture.TextureWidth) : x;
-			wall.y = (wall.Orientation == VERTICAL) ? (y+ i * mVerticalWallTexture.TextureHeight) : y;
+			wall.x = (wall.Orientation == HORIZONTAL) ?  (x + BASIC_SCALE * i * mHorizontalWallTexture.TextureWidth) : x;
+			wall.y = (wall.Orientation == VERTICAL) ? (y+ BASIC_SCALE * i * mVerticalWallTexture.TextureHeight) : y;
 			mWalls.push_back(wall);
 		}
 	}
@@ -52,7 +52,7 @@ public:
 
 	void Load(ID3D11Device* device) {
 		// Horizontal
-		DX::ThrowIfFailed(DirectX::CreateWICTextureFromFile(device, L"upwall.png",    // TODO: remove magic filename constants 
+		DX::ThrowIfFailed(DirectX::CreateWICTextureFromFile(device, L"sidewall.png",    // TODO: remove magic filename constants 
 			nullptr, mHorizontalWallTexture.Texture.ReleaseAndGetAddressOf()));
 		if (mHorizontalWallTexture.Texture) {
 			Microsoft::WRL::ComPtr<ID3D11Resource> resource;
@@ -74,7 +74,7 @@ public:
 			mHorizontalWallTexture.TextureHeight = int(desc.Height);
 		}
 		// Vertical 
-		DX::ThrowIfFailed(DirectX::CreateWICTextureFromFile(device, L"sidewall.png",  // TODO: remove magic filename constants 
+		DX::ThrowIfFailed(DirectX::CreateWICTextureFromFile(device, L"upwall.png",  // TODO: remove magic filename constants 
 			nullptr, mVerticalWallTexture.Texture.ReleaseAndGetAddressOf()));
 		if (mVerticalWallTexture.Texture) {
 			Microsoft::WRL::ComPtr<ID3D11Resource> resource;
