@@ -7,6 +7,7 @@
 #include "StepTimer.h"
 #include "AnimatedTexture.h"
 #include "ScrollingBackground.h"
+#include "Wall.h"
 
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.
@@ -61,25 +62,30 @@ private:
     // Rendering loop timer.
     DX::StepTimer                                   m_timer;
 
-	// Cat.png
+	
+	/*// Cat.png
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_catTexture;
-	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 	DirectX::SimpleMath::Vector2 m_screenPos;
 	DirectX::SimpleMath::Vector2 m_origin;
-	std::unique_ptr<DirectX::CommonStates> m_states;
+	std::unique_ptr<DirectX::CommonStates> m_states;*/
 	
-	// sunset.jpg
+	// grass.jpg
+	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 	RECT m_fullscreenRect;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_background;
 
-	// spaceship (animated)
+	// Walls 
+	std::unique_ptr<Wall> m_walls;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_wallsTexture;
+
+	/*// spaceship (animated)
 	std::unique_ptr<AnimatedTexture> m_ship;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_shipTexture;
 	DirectX::SimpleMath::Vector2 m_shipPos;
 
 	// starfield 
 	std::unique_ptr<ScrollingBackground> m_stars;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_starsTexture;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_starsTexture;*/
 
 	// keyboard and mouse 
 	std::unique_ptr<DirectX::Mouse> m_mouse;

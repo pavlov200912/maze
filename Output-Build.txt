@@ -1,0 +1,14 @@
+﻿1>------ Build started: Project: Direct3D Win32 Game1, Configuration: Debug Win32 ------
+1>Game.cpp
+1>c:\users\pavlo\source\repos\direct3d win32 game1\direct3d win32 game1\animatedtexture.h(121): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+1>c:\users\pavlo\source\repos\direct3d win32 game1\direct3d win32 game1\animatedtexture.h(122): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+1>c:\users\pavlo\source\repos\direct3d win32 game1\direct3d win32 game1\game.cpp(61): warning C4189: 'elapsedTime': local variable is initialized but not referenced
+1>c:\users\pavlo\source\repos\direct3d win32 game1\direct3d win32 game1\game.cpp(138): warning C4189: 'time': local variable is initialized but not referenced
+1>Main.cpp
+1>c:\users\pavlo\source\repos\direct3d win32 game1\direct3d win32 game1\animatedtexture.h(121): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+1>c:\users\pavlo\source\repos\direct3d win32 game1\direct3d win32 game1\animatedtexture.h(122): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+1>Generating Code...
+1>c:\users\pavlo\source\repos\direct3d win32 game1\direct3d win32 game1\main.cpp(192): warning C4702: unreachable code
+1>Direct3D Win32 Game1.vcxproj -> C:\Users\pavlo\source\repos\Direct3D Win32 Game1\Debug\Direct3D Win32 Game1.exe
+1>Done building project "Direct3D Win32 Game1.vcxproj".
+========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========

@@ -12,6 +12,7 @@
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="AnimatedTexture.h" />
     <ClInclude Include="ScrollingBackground.h" />
+    <ClInclude Include="Wall.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -38,6 +39,9 @@
       <Filter>Assets</Filter>
     </Image>
     <Image Include="starfield.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="upwall.png">
       <Filter>Assets</Filter>
     </Image>
   </ItemGroup>

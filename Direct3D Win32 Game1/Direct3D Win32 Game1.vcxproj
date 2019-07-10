@@ -156,6 +156,7 @@
   <ItemGroup>
     <ClInclude Include="AnimatedTexture.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Wall.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ScrollingBackground.h" />
     <ClInclude Include="StepTimer.h" />
@@ -180,6 +181,7 @@
     <Image Include="shipanimated.dds" />
     <Image Include="starfield.png" />
     <Image Include="sunset.jpg" />
+    <Image Include="upwall.png" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest" />
