@@ -2,76 +2,61 @@
 #include <stdexcept>
 #include <SpriteBatch.h>
 #include <vector>
-class Wall {
+class WallsHandler {
 public:
 	enum ORIENTATION {
 		VERTICAL, 
 		HORIZONTAL
 	};
-	struct BLOCK {
-		float x;
-		float y;
-		ORIENTATION orientation;
-	};
-	void Draw(DirectX::SpriteBatch* batch, 
-		const DirectX::XMFLOAT2& screenPos) const
-	{
+	struct Wall {
+		ORIENTATION											Orientation;
+		float												x;
+		float												y;
+		float                                               Depth;
+		float                                               Rotation;
+		DirectX::XMFLOAT2                                   Origin;
+		DirectX::XMFLOAT2                                   Scale;
+		DirectX::SpriteEffects								Effects;
 
-		RECT sourceRect = { 0, 0, mTextureWidth, mTextureHeight };
-		DirectX::XMFLOAT2 temp = { mTextureWidth / 2.f , mTextureHeight / 2.f };
-		batch->Draw(mTexture.Get(), screenPos, &sourceRect, DirectX::Colors::White,
-			mRotation, temp, mScale, mEffects, mDepth);
+		Wall(ORIENTATION orientation, float x, float y, float depth, float rotation, const DirectX::XMFLOAT2& origin, const DirectX::XMFLOAT2& scale,
+		     DirectX::SpriteEffects effects);
+	};
+
+	void addWall(float x, float y, int count = 1, ORIENTATION orientation = VERTICAL, float depth = 0,
+		float rotation = 0, DirectX::XMFLOAT2 origin = { 0, 0 }, DirectX::XMFLOAT2 scale = { 0.3f ,  0.3f }, // TODO: fix magic const
+		DirectX::SpriteEffects effects = DirectX::SpriteEffects_None) {
+		Wall wall(orientation, x, y, depth, rotation, origin, scale, effects);
+		for (int i = 0; i < count; i++) {
+			wall.x = (wall.Orientation == HORIZONTAL) ? (x + i * mVerticalWallTexture.TextureWidth) : x;
+			wall.y = (wall.Orientation == VERTICAL) ? (y+ i * mVerticalWallTexture.TextureHeight) : y;
+			mWalls.push_back(wall);
+		}
+	}
+
+	void Draw(DirectX::SpriteBatch* batch, Wall wall) const
+	{
+		float width = (wall.Orientation == VERTICAL) ? (mVerticalWallTexture.TextureWidth) : (mHorizontalWallTexture.TextureWidth);
+		float heigth = (wall.Orientation == VERTICAL) ? (mVerticalWallTexture.TextureHeight) : (mHorizontalWallTexture.TextureHeight);
+		RECT sourceRect = { 0, 0, width, heigth};
+		DirectX::XMFLOAT2 temp = { width / 2.f , heigth / 2.f };
+		batch->Draw(((wall.Orientation == VERTICAL) ? mVerticalWallTexture : mHorizontalWallTexture).Texture.Get(), // TODO: Nonereadable code
+			{ wall.x, wall.y }, &sourceRect, DirectX::Colors::White,
+			wall.Rotation, temp, wall.Scale, wall.Effects, wall.Depth);
 	}
 
 	void Draw(DirectX::SpriteBatch* batch) const {
-		for (auto wallPos : mWallsCoordinates) {
-			Draw(batch, wallPos);
+		for (auto wall : mWalls) {
+			Draw(batch, wall);
 		}
 	}
 
-	Wall() :
-		mTextureWidth(0),
-		mTextureHeight(0),
-		mRotation(0.f),
-		mScale(0.3f, 0.3f),  // Default scaling, magic constant
-		mDepth(0.f),
-		mOrigin(0.f, 0.f),
-		mEffects(DirectX::SpriteEffects_None)
-	{
-		mWallsCoordinates = { {150, 150} };
-	}
-
-	Wall(
-		std::vector<DirectX::XMFLOAT2> &&ref,
-		const DirectX::XMFLOAT2& origin = { 0, 0 },
-		float rotation = { 0 },
-		float scale = { 0.3f },
-		float depth = { 0.f }
-		) :
-		mTextureWidth(0),
-		mTextureHeight(0),
-		mRotation(rotation),
-		mScale(scale, scale),
-		mDepth(depth),
-		mOrigin(origin),
-		mWallsCoordinates(ref) // Is move constructor calling? 
-	{
-	}
-
-	void addWall(float x, float y, int count = 1, ORIENTATION orientation = VERTICAL) {
-		for (int i = 0; i < count; i++) {
-			mWallsCoordinates.push_back({ x + i * (orientation == HORIZONTAL) * mTextureWidth,
-				y + i * (orientation == VERTICAL) * mTextureHeight }); 
-		}
-	}
-
-	void Load(ID3D11ShaderResourceView* texture)	{
-		mTexture = texture;
-
-		if (texture)
-		{
+	void Load(ID3D11Device* device) {
+		// Horizontal
+		DX::ThrowIfFailed(DirectX::CreateWICTextureFromFile(device, L"upwall.png",    // TODO: remove magic filename constants 
+			nullptr, mHorizontalWallTexture.Texture.ReleaseAndGetAddressOf()));
+		if (mHorizontalWallTexture.Texture) {
 			Microsoft::WRL::ComPtr<ID3D11Resource> resource;
-			texture->GetResource(resource.GetAddressOf());
+			mHorizontalWallTexture.Texture->GetResource(resource.GetAddressOf());
 
 			D3D11_RESOURCE_DIMENSION dim;
 			resource->GetType(&dim);
@@ -85,20 +70,60 @@ public:
 			D3D11_TEXTURE2D_DESC desc;
 			tex2D->GetDesc(&desc);
 
-			mTextureWidth = int(desc.Width);
-			mTextureHeight = int(desc.Height);
+			mHorizontalWallTexture.TextureWidth = int(desc.Width);
+			mHorizontalWallTexture.TextureHeight = int(desc.Height);
 		}
+		// Vertical 
+		DX::ThrowIfFailed(DirectX::CreateWICTextureFromFile(device, L"sidewall.png",  // TODO: remove magic filename constants 
+			nullptr, mVerticalWallTexture.Texture.ReleaseAndGetAddressOf()));
+		if (mVerticalWallTexture.Texture) {
+			Microsoft::WRL::ComPtr<ID3D11Resource> resource;
+			mVerticalWallTexture.Texture->GetResource(resource.GetAddressOf());
+
+			D3D11_RESOURCE_DIMENSION dim;
+			resource->GetType(&dim);
+
+			if (dim != D3D11_RESOURCE_DIMENSION_TEXTURE2D)
+				throw std::exception("Wall expects a Texture2D");
+
+			Microsoft::WRL::ComPtr<ID3D11Texture2D> tex2D;
+			resource.As(&tex2D);
+
+			D3D11_TEXTURE2D_DESC desc;
+			tex2D->GetDesc(&desc);
+
+			mVerticalWallTexture.TextureWidth = int(desc.Width);
+			mVerticalWallTexture.TextureHeight = int(desc.Height);
+		} // TODO: refactor copy-pasted code
+	}
+
+	void Reset() {
+		mHorizontalWallTexture.Texture.Reset();
+		mVerticalWallTexture.Texture.Reset();
 	}
 
 private:
-	int                                                 mTextureWidth;
-	int                                                 mTextureHeight;
-	float                                               mDepth;
-	float                                               mRotation;
-	DirectX::XMFLOAT2                                   mOrigin;
-	DirectX::XMFLOAT2                                   mScale;
-	DirectX::SpriteEffects								mEffects;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>    mTexture;
-	std::vector<DirectX::XMFLOAT2>					    mWallsCoordinates;
+	struct WallTexture {
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Texture;
+		float											 TextureWidth;
+		float											 TextureHeight;
+	};
+	const float												BASIC_SCALE = 0.3f;  // TODO: make this static 
+	WallTexture												mHorizontalWallTexture;   
+	WallTexture												mVerticalWallTexture;
+	std::vector<Wall>										mWalls;
 
 };
+
+inline WallsHandler::Wall::Wall(ORIENTATION orientation, float x, float y, float depth, float rotation,
+	const DirectX::XMFLOAT2& origin, const DirectX::XMFLOAT2& scale, DirectX::SpriteEffects effects)
+{
+	this->x = x;
+	this->y = y;
+	this->Orientation = orientation;
+	this->Rotation = rotation;
+	this->Depth = depth;
+	this->Effects = effects;
+	this->Scale = scale;
+	this->Origin = origin;
+}

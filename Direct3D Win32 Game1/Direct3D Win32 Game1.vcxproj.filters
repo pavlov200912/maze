@@ -44,6 +44,9 @@
     <Image Include="upwall.png">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="sidewall.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest">

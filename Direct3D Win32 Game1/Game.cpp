@@ -319,12 +319,11 @@ void Game::CreateDevice()
 		nullptr, m_shipTexture.ReleaseAndGetAddressOf()));*/
 	
 	// walls 
-	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"upwall.png",
-		nullptr, m_wallsTexture.ReleaseAndGetAddressOf()));
-	std::vector<XMFLOAT2> wallCoordinates = { {150, 150}, {200, 200} };
-	m_walls = std::make_unique<Wall>(std::move(wallCoordinates));
-	m_walls->Load(m_wallsTexture.Get());
-		/*
+	// TODO: Подумать, а корректно ли передавать device в сторонние классы, не просто же так этого не делают
+	m_walls = std::make_unique<WallsHandler>();
+	m_walls->Load(m_d3dDevice.Get()); 
+	m_walls->addWall(150, 150);
+	/*
 	m_ship = std::make_unique<AnimatedTexture>();
 	m_ship->Load(m_shipTexture.Get(), 4, 10); */
 
@@ -458,6 +457,10 @@ void Game::OnDeviceLost()
     m_d3dDevice.Reset();
 	//m_catTexture.Reset();
 	m_spriteBatch.reset();
+
+	m_walls->Reset(); // TODO: Эти две строчки не читаемы
+	m_walls.reset(); 
+	
 	/*m_states.reset();
 	m_background.Reset();
 	m_ship.reset();

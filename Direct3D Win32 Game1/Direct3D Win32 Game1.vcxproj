@@ -179,6 +179,7 @@
     <Image Include="cat.png" />
     <Image Include="directx.ico" />
     <Image Include="shipanimated.dds" />
+    <Image Include="sidewall.png" />
     <Image Include="starfield.png" />
     <Image Include="sunset.jpg" />
     <Image Include="upwall.png" />

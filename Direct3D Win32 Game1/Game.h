@@ -75,8 +75,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_background;
 
 	// Walls 
-	std::unique_ptr<Wall> m_walls;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_wallsTexture;
+	std::unique_ptr<WallsHandler> m_walls;
 
 	/*// spaceship (animated)
 	std::unique_ptr<AnimatedTexture> m_ship;
