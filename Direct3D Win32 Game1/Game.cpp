@@ -323,6 +323,7 @@ void Game::CreateDevice()
 	m_walls = std::make_unique<WallsHandler>();
 	m_walls->Load(m_d3dDevice.Get()); 
 	m_walls->addWall(150, 150, 2, WallsHandler::HORIZONTAL);
+	m_walls->addWall(150, 150, 3, WallsHandler::VERTICAL); 
 	/*
 	m_ship = std::make_unique<AnimatedTexture>();
 	m_ship->Load(m_shipTexture.Get(), 4, 10); */

@@ -38,7 +38,15 @@ public:
 		float width = (wall.Orientation == VERTICAL) ? (mVerticalWallTexture.TextureWidth) : (mHorizontalWallTexture.TextureWidth);
 		float heigth = (wall.Orientation == VERTICAL) ? (mVerticalWallTexture.TextureHeight) : (mHorizontalWallTexture.TextureHeight);
 		RECT sourceRect = { 0, 0, width, heigth};
-		DirectX::XMFLOAT2 temp = { width / 2.f , heigth / 2.f };
+		DirectX::XMFLOAT2 temp;
+		if (wall.Orientation == VERTICAL)
+		{
+			temp = { width / 2, width / 2 };
+		} else
+		{
+			temp = { heigth / 2, heigth / 2 };
+		}
+
 		batch->Draw(((wall.Orientation == VERTICAL) ? mVerticalWallTexture : mHorizontalWallTexture).Texture.Get(), // TODO: Nonereadable code
 			{ wall.x, wall.y }, &sourceRect, DirectX::Colors::White,
 			wall.Rotation, temp, wall.Scale, wall.Effects, wall.Depth);
