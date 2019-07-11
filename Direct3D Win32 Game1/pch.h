@@ -41,6 +41,15 @@
 #include <memory>
 #include <stdexcept>
 
+// LogFile
+// exceptions
+
+#include <exception>
+#include <stdexcept>
+
+#include "expected.h"							// error handling with "expected"
+#include "serviceLocator.h"	
+
 // DirectXTK
 
 #include "CommonStates.h"
@@ -74,3 +83,5 @@ namespace DX
         }
     }
 }
+
+

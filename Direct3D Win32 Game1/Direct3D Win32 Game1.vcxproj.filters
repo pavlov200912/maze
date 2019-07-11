@@ -13,11 +13,16 @@
     <ClInclude Include="AnimatedTexture.h" />
     <ClInclude Include="ScrollingBackground.h" />
     <ClInclude Include="Wall.h" />
+    <ClInclude Include="expected.h" />
+    <ClInclude Include="log.h" />
+    <ClInclude Include="serviceLocator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="log.cpp" />
+    <ClCompile Include="serviceLocator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

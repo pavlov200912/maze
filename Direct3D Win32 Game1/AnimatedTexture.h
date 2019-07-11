@@ -151,6 +151,8 @@ public:
 
 	bool IsPaused() const { return mPaused; }
 
+	int m_texture_width() const; // TODO: codestyle 
+	int m_texture_height() const;
 private:
 	bool                                                mPaused;
 	int                                                 mFrame;
@@ -166,3 +168,13 @@ private:
 	DirectX::SpriteEffects								mEffects;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>    mTexture;
 };
+
+inline int AnimatedTexture::m_texture_width() const
+{
+	return mTextureWidth / mFrameCount;
+}
+
+inline int AnimatedTexture::m_texture_height() const
+{
+	return mTextureHeight;
+}

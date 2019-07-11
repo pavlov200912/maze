@@ -21,9 +21,38 @@ extern "C"
     __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 
+
+
+
+void startLoggingService()
+{
+	// create file logger
+	std::shared_ptr<util::Logger<util::FileLogPolicy> > engineLogger(new util::Logger<util::FileLogPolicy>(L"bell0engine.log"));
+
+	// set name of current thread
+	engineLogger->setThreadName("mainThread");
+
+	// register the logging service
+	util::ServiceLocator::provideFileLoggingService(engineLogger);
+
+#ifndef NDEBUG
+	// print starting message
+	util::ServiceLocator::getFileLogger()->print<util::SeverityType::info>("The file logger was created successfully.");
+#endif
+}
+
 // Entry point
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
+	try { startLoggingService(); }
+	catch (std::runtime_error)
+	{
+		// show error message on a message box
+		MessageBox(NULL, L"Unable to start logging service!", L"Critical Error!", MB_ICONEXCLAMATION | MB_OK);
+
+		// humbly return with error code
+		return -1;
+	}
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 

@@ -42,7 +42,8 @@ public:
 		if (wall.Orientation == VERTICAL)
 		{
 			temp = { width / 2, width / 2 };
-		} else
+		} 
+		else
 		{
 			temp = { heigth / 2, heigth / 2 };
 		}
@@ -110,7 +111,40 @@ public:
 		mVerticalWallTexture.Texture.Reset();
 	}
 
+	// TODO: (intersection) How long ? Oprimization? 
+	bool IsIntersect(RECT objectRect)
+	{
+		for (const auto& wall : mWalls)
+		{
+			LONG delta = mVerticalWallTexture.TextureWidth * BASIC_SCALE / 2;
+			RECT wallRect = {0, 0, 0, 0};  // TODO: LONG TO FLOAT CONVERSION! FIX!
+ 
+			if (wall.Orientation == VERTICAL)
+			{
+
+				wallRect = { (LONG)wall.x - delta, (LONG)wall.y - delta,
+				(LONG)(wall.x + mVerticalWallTexture.TextureWidth * BASIC_SCALE - delta),
+				(LONG)(wall.y + mVerticalWallTexture.TextureHeight * BASIC_SCALE - delta)};
+
+			} 
+			else
+			{
+				wallRect = { (LONG)wall.x - delta, (LONG)wall.y - delta,
+				(LONG)(wall.x + mHorizontalWallTexture.TextureWidth * BASIC_SCALE - delta),
+				(LONG)(wall.y + mHorizontalWallTexture.TextureHeight * BASIC_SCALE - delta)};
+			}
+			if (IsIntersect(wallRect, objectRect)) return true;
+
+			
+		}
+		return false;
+	}
+
 private:
+	static bool IsIntersect(const RECT &a , const RECT &b)
+	{
+		return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top; // Y orientation changed
+	}
 	struct WallTexture {
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Texture;
 		float											 TextureWidth;
@@ -120,9 +154,15 @@ private:
 	WallTexture												mHorizontalWallTexture;   
 	WallTexture												mVerticalWallTexture;
 	std::vector<Wall>										mWalls;
-
+	void my_log(std::string message)
+	{
+#ifndef NDEBUG
+		// print message
+		util::ServiceLocator::getFileLogger()->print<util::SeverityType::info>(message);
+#endif
+	}
 };
-
+	
 inline WallsHandler::Wall::Wall(ORIENTATION orientation, float x, float y, float depth, float rotation,
 	const DirectX::XMFLOAT2& origin, const DirectX::XMFLOAT2& scale, DirectX::SpriteEffects effects)
 {

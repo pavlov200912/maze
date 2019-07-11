@@ -62,11 +62,11 @@ void Game::Update(DX::StepTimer const& timer)
 
     // TODO: Add your game logic here.
 
-	//m_ship->Update(elapsedTime);
+	m_ship->Update(elapsedTime);
 	//m_stars->Update((elapsedTime * 10)); // some function of star_speed(time) 
 	// TODO Rewrite this code, nice that it work but... 
 	auto kb = m_keyboard->GetState();
-	/*if (kb.Escape) {
+	if (kb.Escape) {
 		ExitGame();
 	}
 	Vector2 move = { 0, 0 };
@@ -109,8 +109,21 @@ void Game::Update(DX::StepTimer const& timer)
 		}
 	}
 	m_ship->setRotation(rotateAngle);
- 	
-	m_shipPos += move; 
+
+	m_shipPos += move;
+
+	RECT shipRect = { m_shipPos.x - m_ship->m_texture_width() / 2,
+		m_shipPos.y - m_ship->m_texture_height() / 2,
+		m_shipPos.x + m_ship->m_texture_width() / 2,
+		m_shipPos.y + m_ship->m_texture_height() / 2 };
+
+	
+	if (m_walls->IsIntersect(shipRect))
+	{
+		m_shipPos -= move; // TODO: fix this, cancel only move.x || move.y
+	}
+
+	/*
 	if (!m_stars->InBackground(m_shipPos, m_ship->getFrameWidth())) {
 		m_shipPos.x -= move.x;
 	}
@@ -144,7 +157,7 @@ void Game::Render()
 	//m_stars->Draw(m_spriteBatch.get());
 
 	//m_spriteBatch->Draw(m_catTexture.Get(), m_screenPos, nullptr, Colors::White, cosf(time) * 4.f, m_origin, sinf(time) + 2.f); 
-	//m_ship->Draw(m_spriteBatch.get(), m_shipPos); 
+	m_ship->Draw(m_spriteBatch.get(), m_shipPos); 
 
 	m_spriteBatch->End();
     Present();
@@ -314,9 +327,9 @@ void Game::CreateDevice()
 	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"grass.png", nullptr,
 		m_background.ReleaseAndGetAddressOf()));
 
-	/*// spaceship (animated) 
+	// spaceship (animated) 
 	DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"shipanimated.dds",
-		nullptr, m_shipTexture.ReleaseAndGetAddressOf()));*/
+		nullptr, m_shipTexture.ReleaseAndGetAddressOf()));
 	
 	// walls 
 	// TODO: ѕодумать, а корректно ли передавать device в сторонние классы, не просто же так этого не делают
@@ -324,9 +337,9 @@ void Game::CreateDevice()
 	m_walls->Load(m_d3dDevice.Get()); 
 	m_walls->addWall(150, 150, 2, WallsHandler::HORIZONTAL);
 	m_walls->addWall(150, 150, 3, WallsHandler::VERTICAL); 
-	/*
+	
 	m_ship = std::make_unique<AnimatedTexture>();
-	m_ship->Load(m_shipTexture.Get(), 4, 10); */
+	m_ship->Load(m_shipTexture.Get(), 4, 10); 
 
 	/*// stars
 	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"starfield.png", nullptr,
@@ -438,11 +451,11 @@ void Game::CreateResources()
 	m_fullscreenRect.top = 0;
 	m_fullscreenRect.right = backBufferWidth;
 	m_fullscreenRect.bottom = backBufferHeight;
-	/*//spaceship 
+	//spaceship 
 	m_shipPos.x = float(backBufferWidth / 2);
 	m_shipPos.y = float((backBufferHeight / 2) + (backBufferHeight / 4));
 	// stars
-	m_stars->SetWindow(backBufferWidth, backBufferHeight);*/
+	//m_stars->SetWindow(backBufferWidth, backBufferHeight);
 
 }
 

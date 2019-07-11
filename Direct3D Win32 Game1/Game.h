@@ -34,7 +34,13 @@ public:
     void GetDefaultSize( int& width, int& height ) const;
 
 private:
-
+	void my_log(std::string message)
+	{
+#ifndef NDEBUG
+		// print message
+		util::ServiceLocator::getFileLogger()->print<util::SeverityType::info>(message);
+#endif
+	}
     void Update(DX::StepTimer const& timer);
     void Render();
 
@@ -77,13 +83,13 @@ private:
 	// Walls 
 	std::unique_ptr<WallsHandler> m_walls;
 
-	/*// spaceship (animated)
+	// spaceship (animated)
 	std::unique_ptr<AnimatedTexture> m_ship;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_shipTexture;
 	DirectX::SimpleMath::Vector2 m_shipPos;
 
 	// starfield 
-	std::unique_ptr<ScrollingBackground> m_stars;
+	/*std::unique_ptr<ScrollingBackground> m_stars;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_starsTexture;*/
 
 	// keyboard and mouse 
