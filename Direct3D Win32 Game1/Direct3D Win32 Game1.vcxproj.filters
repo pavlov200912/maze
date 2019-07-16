@@ -12,11 +12,11 @@
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="AnimatedTexture.h" />
     <ClInclude Include="ScrollingBackground.h" />
-    <ClInclude Include="Wall.h" />
     <ClInclude Include="expected.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="serviceLocator.h" />
     <ClInclude Include="LevelParser.h" />
+    <ClInclude Include="WallsHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -25,6 +25,7 @@
     <ClCompile Include="log.cpp" />
     <ClCompile Include="serviceLocator.cpp" />
     <ClCompile Include="LevelParser.cpp" />
+    <ClCompile Include="WallsHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

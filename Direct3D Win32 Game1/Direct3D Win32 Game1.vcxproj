@@ -160,7 +160,7 @@
     <ClInclude Include="LevelParser.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="serviceLocator.h" />
-    <ClInclude Include="Wall.h" />
+    <ClInclude Include="WallsHandler.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ScrollingBackground.h" />
     <ClInclude Include="StepTimer.h" />
@@ -177,6 +177,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="serviceLocator.cpp" />
+    <ClCompile Include="WallsHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

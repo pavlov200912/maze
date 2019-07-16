@@ -29,16 +29,6 @@ void LevelParser::ReadLevelFile(std::string file_name) // TODO: should throw IO 
 void LevelParser::AddWallsToDraw()
 {
 	// TODO: Draw only necessary walls, check screen scrolling (somehow?)
-
-	my_log("ize: " + std::to_string(wallsToDraw.size()));
-	for (const auto& inf: wallsToDraw)
-	{
-		my_log("bool: " + std::to_string(inf.isVertical) +
-			"x: " + std::to_string(inf.x) +
-			"y: " + std::to_string(inf.y) +
-			"count: " + std::to_string(inf.count));
-	}
-	my_log("zero: " + std::to_string(zeroPos.x) + " " + std::to_string(zeroPos.y));
 	wallHandler->ClearWalls(); // TODO: REMOVE THIS CRUNCH
 	for(const auto& inf: wallsToDraw)
 	{

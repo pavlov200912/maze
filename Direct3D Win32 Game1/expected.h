@@ -21,7 +21,7 @@
 namespace util
 {
 	// CLASSES //////////////////////////////////////////////////////////////////////////////
-	template<class T>
+	template <class T>
 	class Expected
 	{
 	protected:
@@ -31,13 +31,21 @@ namespace util
 			std::exception_ptr spam;
 		};
 
-		bool gotResult;							// true iff valid result is available
-		Expected() {};							// private constructor
+		bool gotResult; // true iff valid result is available
+		Expected()
+		{
+		}; // private constructor
 
 	public:
 		// constructors and destructor
-		Expected(const T& r) : result(r), gotResult(true) {}
-		Expected(T&& r) : result(std::move(r)), gotResult(true) {}
+		Expected(const T& r) : result(r), gotResult(true)
+		{
+		}
+
+		Expected(T&& r) : result(std::move(r)), gotResult(true)
+		{
+		}
+
 		Expected(const Expected& e) : gotResult(e.gotResult)
 		{
 			if (gotResult)
@@ -45,6 +53,7 @@ namespace util
 			else
 				new(&spam) std::exception_ptr(e.spam);
 		}
+
 		Expected(Expected&& e) : gotResult(e.gotResult)
 		{
 			if (gotResult)
@@ -52,7 +61,10 @@ namespace util
 			else
 				new(&spam) std::exception_ptr(std::move(e.spam));
 		}
-		~Expected() {}
+
+		~Expected()
+		{
+		}
 
 		// swap two "expected"
 		void swap(Expected& e)
@@ -79,16 +91,19 @@ namespace util
 		}
 
 		// creating expect from exceptions
-		template<typename E>
-		Expected<T>(E const& e) : spam(std::make_exception_ptr(e)) { }
+		template <typename E>
+		Expected<T>(E const& e) : spam(std::make_exception_ptr(e))
+		{
+		}
 
-		template<class E>
+		template <class E>
 		static Expected<T> fromException(const E& exception)
 		{
 			if (typeid(exception) != typeid(E))
 				throw std::invalid_argument("slicing detected!\n");
 			return fromException(std::make_exception_ptr(exception));
 		}
+
 		static Expected<T> fromException(std::exception_ptr p)
 		{
 			Expected<T> e;
@@ -96,6 +111,7 @@ namespace util
 			new(&e.spam) std::exception_ptr(std::move(p));
 			return e;
 		}
+
 		static Expected<T> fromException()
 		{
 			return fromException(std::current_exception());
@@ -122,6 +138,7 @@ namespace util
 				std::rethrow_exception(spam);
 			return result;
 		}
+
 		const T& get() const
 		{
 			if (!gotResult)
@@ -130,7 +147,7 @@ namespace util
 		}
 
 		// probe for exception
-		template<class E>
+		template <class E>
 		bool hasException() const
 		{
 			try
@@ -145,7 +162,6 @@ namespace util
 			}
 			catch (...)
 			{
-
 			}
 			return false;
 		}
@@ -153,7 +169,7 @@ namespace util
 		friend class Expected<void>;
 	};
 
-	template<>
+	template <>
 	class Expected<void>
 	{
 		std::exception_ptr spam;
@@ -161,16 +177,24 @@ namespace util
 	public:
 		// constructors and destructor
 		template <typename E>
-		Expected(E const& e) : spam(std::make_exception_ptr(e)) { }
-		template<typename T>
+		Expected(E const& e) : spam(std::make_exception_ptr(e))
+		{
+		}
+
+		template <typename T>
 		Expected(const Expected<T>& e)
 		{
 			if (!e.gotResult)
 				new(&spam) std::exception_ptr(e.spam);
 		}
 
-		Expected(Expected&& o) : spam(std::move(o.spam)) { }
-		Expected() : spam() {}
+		Expected(Expected&& o) : spam(std::move(o.spam))
+		{
+		}
+
+		Expected() : spam()
+		{
+		}
 
 		// operator overload
 		Expected& operator=(const Expected& e)

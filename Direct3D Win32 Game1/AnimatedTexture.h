@@ -24,18 +24,18 @@ public:
 		mTextureHeight(0),
 		mTimePerFrame(0.f),
 		mTotalElapsed(0.f),
-		mRotation(0.f),
-		mScale(1.f, 1.f),
 		mDepth(0.f),
+		mRotation(0.f),
 		mOrigin(0.f, 0.f),
+		mScale(1.f, 1.f),
 		mEffects(DirectX::SpriteEffects_None)
 	{
 	}
 
 	AnimatedTexture(const DirectX::XMFLOAT2& origin,
-		float rotation,
-		float scale,
-		float depth) :
+	                float rotation,
+	                float scale,
+	                float depth) :
 		mPaused(false),
 		mFrame(0),
 		mFrameCount(0),
@@ -43,10 +43,10 @@ public:
 		mTextureHeight(0),
 		mTimePerFrame(0.f),
 		mTotalElapsed(0.f),
-		mRotation(rotation),
-		mScale(scale, scale),
 		mDepth(depth),
-		mOrigin(origin)
+		mRotation(rotation),
+		mOrigin(origin),
+		mScale(scale, scale)
 	{
 	}
 
@@ -106,7 +106,8 @@ public:
 		Draw(batch, mFrame, mState, screenPos);
 	}
 
-	float getFrameWidth() {
+	float getFrameWidth()
+	{
 		return float(mTextureWidth) / mFrameCount;
 	}
 
@@ -123,16 +124,18 @@ public:
 		temp.x = frameWidth / 2;
 		temp.y = frameHeigth / 2;
 		batch->Draw(mTexture.Get(), screenPos, &sourceRect, DirectX::Colors::White,
-			mRotation, temp, mScale, mEffects, mDepth);
+		            mRotation, temp, mScale, mEffects, mDepth);
 	}
 
-	void setRotation(float x) {
+	void setRotation(float x)
+	{
 		mRotation = x;
 	}
 
-	void isForward(bool forward) {
+	void isForward(bool forward)
+	{
 		if (!forward) mEffects = DirectX::SpriteEffects_FlipVertically;
-		else	      mEffects = DirectX::SpriteEffects_None;
+		else mEffects = DirectX::SpriteEffects_None;
 	}
 
 	void Reset()
@@ -156,32 +159,35 @@ public:
 	int m_texture_width() const; // TODO: codestyle 
 	int m_texture_height() const;
 
-	enum STATE {
+	enum STATE
+	{
 		DOWN = 0,
 		LEFT = 1,
 		RIGHT = 2,
 		UP = 3
 	};
+
 	void setState(STATE state)
 	{
 		mState = state;
 	}
+
 private:
-	bool                                                mPaused;
-	int                                                 mFrame;
-	int                                                 mFrameCount;
-	STATE												mState;
-	int													mStateCount;
-	int                                                 mTextureWidth;
-	int                                                 mTextureHeight;
-	float                                               mTimePerFrame;
-	float                                               mTotalElapsed;
-	float                                               mDepth;
-	float                                               mRotation;
-	DirectX::XMFLOAT2                                   mOrigin;
-	DirectX::XMFLOAT2                                   mScale;
-	DirectX::SpriteEffects								mEffects;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>    mTexture;
+	bool mPaused;
+	int mFrame;
+	int mFrameCount;
+	STATE mState;
+	int mStateCount;
+	int mTextureWidth;
+	int mTextureHeight;
+	float mTimePerFrame;
+	float mTotalElapsed;
+	float mDepth;
+	float mRotation;
+	DirectX::XMFLOAT2 mOrigin;
+	DirectX::XMFLOAT2 mScale;
+	DirectX::SpriteEffects mEffects;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mTexture;
 };
 
 inline int AnimatedTexture::m_texture_width() const
