@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <exception>
@@ -90,7 +91,6 @@ public:
 		}
 	}
 
-	
 private:
 	void my_log(std::string message) const 
 	{

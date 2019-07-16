@@ -99,23 +99,8 @@ void Game::Update(DX::StepTimer const& timer)
 	{
 		move.x += 1.f * boost;
 		m_object->setState(AnimatedTexture::RIGHT);
-	} /*
-	if (kb.W) {
-		if (kb.A) {
-			rotateAngle = -XM_PI / 4;
-		}
-		if (kb.D) {
-			rotateAngle = XM_PI / 4;
-		}
 	}
-	else if (kb.S) {
-		if (kb.A) {
-			rotateAngle = XM_PI + XM_PI / 4;
-		}
-		if (kb.D) {
-			rotateAngle = XM_PI - XM_PI / 4;
-		}
-	}*/
+
 	m_object->setRotation(rotateAngle);
 
 	const RECT objectRect = {
@@ -132,14 +117,9 @@ void Game::Update(DX::StepTimer const& timer)
 		m_walls->Update(move.y);
 		m_floor->Update(move.y);
 	}
-	
 
-	/*
-	if (!m_stars->InBackground(m_objectPos, m_object->getFrameWidth())) {
-		m_objectPos.x -= move.x;
-	}
 
-	auto mouse = m_mouse->GetState();
+	/*auto mouse = m_mouse->GetState();
 	if (mouse.leftButton) {
 		m_screenPos.x = mouse.x;
 		m_screenPos.y = mouse.y; 
@@ -257,7 +237,7 @@ void Game::CreateDevice()
 	creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-	static const D3D_FEATURE_LEVEL featureLevels [] =
+	static const D3D_FEATURE_LEVEL featureLevels[] =
 	{
 		// TODO: Modify for supported Direct3D feature levels
 		D3D_FEATURE_LEVEL_11_1,
@@ -296,7 +276,7 @@ void Game::CreateDevice()
 			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
 			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
 #endif
-			D3D11_MESSAGE_ID hide [] =
+			D3D11_MESSAGE_ID hide[] =
 			{
 				D3D11_MESSAGE_ID_SETPRIVATEDATA_CHANGINGPARAMS,
 				// TODO: Add more message IDs here as needed.
@@ -319,28 +299,13 @@ void Game::CreateDevice()
 	m_spriteBatch = std::make_unique<SpriteBatch>(m_d3dContext.Get());
 	//m_states = std::make_unique<CommonStates>(m_d3dDevice.Get());
 
-
-	/*ComPtr<ID3D11Resource> resource; 
-	DX::ThrowIfFailed(
-		CreateDDSTextureFromFile(m_d3dDevice.Get(), L"cat.dds",  // WIC - Windows Imaging Component 
-			resource.GetAddressOf(), 
-			m_catTexture.ReleaseAndGetAddressOf()));
-
-	ComPtr<ID3D11Texture2D> cat;
-	DX::ThrowIfFailed(resource.As(&cat));
-	CD3D11_TEXTURE2D_DESC catDesc; 
-	cat->GetDesc(&catDesc);
-
-	m_floorOrigin.x = float(catDesc.Width / 2);
-	m_floorOrigin.y = float(catDesc.Height / 2);*/
-
 	// background grass.jpg
 	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"grass.png", nullptr,
-	                                           m_background.ReleaseAndGetAddressOf()));
+		m_background.ReleaseAndGetAddressOf()));
 
 	// spaceship (animated) 
 	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"turtles.png",
-	                                           nullptr, m_shipTexture.ReleaseAndGetAddressOf()));
+		nullptr, m_shipTexture.ReleaseAndGetAddressOf()));
 
 	// walls 
 	// TODO: (vanya translate) Think about throwing a device in outer class, why samples avoid this? 
@@ -349,8 +314,6 @@ void Game::CreateDevice()
 	m_walls = std::make_unique<WallsHandler>();
 	m_walls->Load(m_d3dDevice.Get());
 
-	//m_walls->addWall(150, 150, 2, WallsHandler::HORIZONTAL);
-	//m_walls->addWall(150, 150, 3, WallsHandler::VERTICAL); 
 
 	// object
 	m_object = std::make_unique<AnimatedTexture>();
@@ -359,25 +322,19 @@ void Game::CreateDevice()
 	// wooden_floor
 	ComPtr<ID3D11Resource> resource;
 	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"wooden-floor.jpg",
-	                                           resource.GetAddressOf(), m_floorTexture.ReleaseAndGetAddressOf()));
+		resource.GetAddressOf(), m_floorTexture.ReleaseAndGetAddressOf()));
 	m_floor = std::make_unique<ScrollingBackground>();
 	m_floor->Load(m_floorTexture.Get());
 	ComPtr<ID3D11Texture2D> floor;
 	DX::ThrowIfFailed(resource.As(&floor));
 	CD3D11_TEXTURE2D_DESC floorDesc;
 	floor->GetDesc(&floorDesc);
-	
+
 
 	m_floorOrigin.x = floorDesc.Width / 2.f;
 	m_floorOrigin.y = floorDesc.Height / 2.f;
 
 	m_walls->setScale(floorDesc.Width);
-
-	/*// stars
-	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"starfield.png", nullptr,
-		m_starsTexture.ReleaseAndGetAddressOf())); 
-	m_stars = std::make_unique<ScrollingBackground>();
-	m_stars->Load(m_starsTexture.Get());*/
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -479,9 +436,6 @@ void Game::CreateResources()
 
 	// TODO: Initialize windows-size dependent objects here.
 
-	/*// Cat.png
-	m_screenPos.x = backBufferWidth / 2.f;
-	m_screenPos.y = backBufferHeight / 2.f;*/
 	// grass.png 
 	m_fullscreenRect.left = 0;
 	m_fullscreenRect.top = 0;
@@ -490,16 +444,11 @@ void Game::CreateResources()
 	//spaceship 
 	m_objectPos.x = float(backBufferWidth / 2);
 	m_objectPos.y = float((backBufferHeight / 2) + (backBufferHeight / 4));
-	// stars
-	//m_stars->SetWindow(backBufferWidth, backBufferHeight);
-
+	
 	m_walls->setWindowHeight(backBufferHeight);
 
 	// wooden_floor
 	m_floor->SetWindow(backBufferWidth, backBufferHeight, m_walls->getVerticalWidth());
-	m_floorPos.x = float(backBufferWidth / 2);
-	m_floorPos.y = float(backBufferHeight) - m_floorOrigin.y;
-	m_floorCount = int(float(backBufferHeight) / (2 * m_floorOrigin.y)) + 1;
 
 	// level parser
 	DirectX::SimpleMath::Vector2 zero = {backBufferWidth / 2.f - m_floorOrigin.x, (float)backBufferHeight};
@@ -525,18 +474,12 @@ void Game::OnDeviceLost()
 	m_swapChain.Reset();
 	m_d3dContext.Reset();
 	m_d3dDevice.Reset();
-	//m_catTexture.Reset();
 	m_spriteBatch.reset();
 
 	m_walls->Reset(); // TODO: This is unreadable
 	m_walls.reset();
 
-	/*m_states.reset();
-	m_background.Reset();
-	m_object.reset();
-	m_shipTexture.Reset();
-	m_stars.reset();
-	m_starsTexture.Reset();*/
+	m_floor.reset();
 
 
 	CreateDevice();
