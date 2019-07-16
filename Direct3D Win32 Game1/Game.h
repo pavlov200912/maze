@@ -98,9 +98,12 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_starsTexture;*/
 
 	// wooden_floor 
+	std::unique_ptr<ScrollingBackground> m_floor;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_floorTexture;
 	DirectX::SimpleMath::Vector2 m_floorPos;
 	DirectX::SimpleMath::Vector2 m_floorOrigin;
+	int							 m_floorCount;
+	
 
 	// keyboard and mouse 
 	std::unique_ptr<DirectX::Mouse> m_mouse;

@@ -60,9 +60,14 @@ public:
 		BASIC_SCALE = floorWidth / (9.f * m_horizontalWallTexture.TextureWidth);
 	}
 
-	void Update(float delta_y, int level_height, float screen_height);
+	void Update(float delta_y);
 
+	void setWindowHeight(float screenHeight);
+
+	void setLevelHeight(int count);
+	float getLevelHeight() const;
 private:
+	bool inBounds(int y) const;
 
 	static void my_log(std::string message);
 
@@ -80,5 +85,7 @@ private:
 	WallTexture m_verticalWallTexture;
 	std::vector<Wall> m_walls;
 	DirectX::XMFLOAT2 m_centerPos = {0, 0}; 
+	float m_screenHeight;
+	float m_levelHeight;
 };
 

@@ -45,13 +45,31 @@ void WallsHandler::Draw(DirectX::SpriteBatch* batch) const
 }
 
 
-void WallsHandler::Update(float delta_y, int level_height, float screen_height)
+void WallsHandler::Update(float delta_y)
 {
-	float UPPER_BOUND = BASIC_SCALE * level_height * m_verticalWallTexture.TextureHeight - screen_height +
-		BASIC_SCALE * m_verticalWallTexture.TextureWidth;
-	if (m_centerPos.y - delta_y > 0 && m_centerPos.y - delta_y < UPPER_BOUND) {
+	if (inBounds(m_centerPos.y - delta_y)) {
 		m_centerPos.y -= delta_y;
 	}
+}
+
+void WallsHandler::setWindowHeight(float screenHeight)
+{
+	m_screenHeight = screenHeight;
+}
+
+void WallsHandler::setLevelHeight(int count)
+{
+	m_levelHeight = BASIC_SCALE * count * m_verticalWallTexture.TextureHeight + BASIC_SCALE * m_verticalWallTexture.TextureWidth;
+}
+
+float WallsHandler::getLevelHeight() const
+{
+	return m_levelHeight;
+}
+
+bool WallsHandler::inBounds(int y) const
+{
+	return y > 0 && y < m_levelHeight - m_screenHeight;
 }
 
 void WallsHandler::Load(ID3D11Device* device)

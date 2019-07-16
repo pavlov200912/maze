@@ -1,34 +1,27 @@
-//--------------------------------------------------------------------------------------
-// File: ScrollingBackground.h
-//
-// C++ version of the C# example on how to make a scrolling background with SpriteBatch
-// http://msdn.microsoft.com/en-us/library/bb203868.aspx
-//
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-//--------------------------------------------------------------------------------------
-
 #pragma once
 
 #include <exception>
 #include <SpriteBatch.h>
 
+#include  "WallsHandler.h"
 class ScrollingBackground
 {
 public:
 	ScrollingBackground() :
-		mScreenHeight(0),
-		mTextureWidth(0),
-		mTextureHeight(0),
-		mScreenPos(0, 0),
-		mTextureSize(0, 0),
-		mOrigin(0, 0)
+		m_screenHeight(0),
+		m_textureWidth(0),
+		m_textureHeight(0),
+		m_screenPos(0, 0),
+		m_textureSize(0, 0),
+		m_origin(0, 0),
+		m_levelHeight(0),
+		m_zeroY(0)
 	{
 	}
 
 	void Load(ID3D11ShaderResourceView* texture)
 	{
-		mTexture = texture;
+		m_texture = texture;
 
 		if (texture)
 		{
@@ -47,71 +40,77 @@ public:
 			D3D11_TEXTURE2D_DESC desc;
 			tex2D->GetDesc(&desc);
 
-			mTextureWidth = desc.Width;
-			mTextureHeight = desc.Height;
+			m_textureWidth = desc.Width;
+			m_textureHeight = desc.Height;
 
-			mTextureSize.x = 0.f;
-			mTextureSize.y = float(desc.Height);
+			m_textureSize.x = 0.f;
+			m_textureSize.y = float(desc.Height);
 
-			mOrigin.x = desc.Width / 2.f;
-			mOrigin.y = 0.f;
+			m_origin.x = desc.Width / 2.f;
+			m_origin.y = 0;
 		}
 	}
 
-	void SetWindow(int screenWidth, int screenHeight)
+	void SetWindow(int screenWidth, int screenHeight, float padding)
 	{
-		mScreenHeight = screenHeight;
+		m_screenHeight = screenHeight;
 
-		mScreenPos.x = float(screenWidth) / 2.f;
-		mScreenPos.y = float(screenHeight) / 2.f;
+		m_screenPos.x = float(screenWidth) / 2.f;
+		m_screenPos.y = float(screenHeight) - m_textureHeight - padding;
+		m_textureCount = int(m_screenHeight / m_textureHeight);
+	}
+
+	void setLevelHeight(float height)
+	{
+		m_levelHeight = height;
 	}
 
 	void Update(float deltaY)
 	{
-		mScreenPos.y += deltaY;
-		mScreenPos.y = fmodf(mScreenPos.y, float(mTextureHeight));
+		if (inBounds(m_zeroY - deltaY)) {
+			m_zeroY -= deltaY;
+			m_screenPos.y = fmodf(m_screenPos.y, float(m_textureHeight));
+		}
 	}
 
 	void Draw(DirectX::SpriteBatch* batch) const
 	{
 		using namespace DirectX;
 
-		XMVECTOR screenPos = XMLoadFloat2(&mScreenPos);
-		XMVECTOR origin = XMLoadFloat2(&mOrigin);
+		SimpleMath::Vector2 screenPos = { m_screenPos};
+		SimpleMath::Vector2 origin = { m_origin };
 
-		if (mScreenPos.y < mScreenHeight)
+		my_log("count: " + std::to_string(m_textureCount));
+		for (int i = -1; i <= m_textureCount; i++)
 		{
-			batch->Draw(mTexture.Get(), screenPos, nullptr,
-				Colors::White, 0.f, origin, g_XMOne, SpriteEffects_None, 0.f);
-		}
-
-		XMVECTOR textureSize = XMLoadFloat2(&mTextureSize);
-
-		batch->Draw(mTexture.Get(), screenPos - textureSize, nullptr,
-			Colors::White, 0.f, origin, g_XMOne, SpriteEffects_None, 0.f);
-
-		if (mTextureHeight < mScreenHeight)
-		{
-			batch->Draw(mTexture.Get(), screenPos + textureSize, nullptr,
+			SimpleMath::Vector2 temp = screenPos;
+			temp.y -= i * m_textureHeight - m_zeroY;
+			batch->Draw(m_texture.Get(), temp, nullptr,
 				Colors::White, 0.f, origin, g_XMOne, SpriteEffects_None, 0.f);
 		}
 	}
-	bool InBackground(DirectX::XMFLOAT2 screenPos, float textureWidth) {
-		float leftBorder = mScreenPos.x - mTextureWidth / 2.f;
-		float rightBorder = mScreenPos.x + mTextureWidth / 2.f;
-		
-		if (screenPos.x - textureWidth / 2 < leftBorder) return false;
-		if (screenPos.x + textureWidth / 2 > rightBorder) return false;
 
-		return true;
-	}
-
+	
 private:
-	int                                                 mScreenHeight;
-	int                                                 mTextureWidth;
-	int                                                 mTextureHeight;
-	DirectX::XMFLOAT2                                   mScreenPos;
-	DirectX::XMFLOAT2                                   mTextureSize;
-	DirectX::XMFLOAT2                                   mOrigin;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>    mTexture;
+	void my_log(std::string message) const 
+	{
+#ifndef NDEBUG
+		// print message
+		util::ServiceLocator::getFileLogger()->print<util::SeverityType::info>(message);
+#endif
+	}
+	bool inBounds(float y) const
+	{
+		return y > 0 && y < m_levelHeight - m_screenHeight;
+	}
+	int													m_textureCount;
+	int                                                 m_textureWidth;
+	int                                                 m_textureHeight;
+	DirectX::XMFLOAT2                                   m_screenPos;
+	DirectX::XMFLOAT2                                   m_textureSize;
+	DirectX::XMFLOAT2                                   m_origin;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>    m_texture;
+	float												m_levelHeight;
+	float												m_zeroY;
+	float                                               m_screenHeight;
 };

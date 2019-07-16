@@ -43,6 +43,8 @@ void Game::Initialize(HWND window, int width, int height)
 
 	// level parser
 	m_levelParser->ReadLevelFile("level.txt");
+	m_walls->setLevelHeight(m_levelParser->get_level_height());
+	m_floor->setLevelHeight(m_walls->getLevelHeight());
 }
 
 // Executes the basic game loop.
@@ -64,37 +66,36 @@ void Game::Update(DX::StepTimer const& timer)
 	// TODO: Add your game logic here.
 
 	m_object->Update(elapsedTime);
-	//m_stars->Update((elapsedTime * 10)); // some function of star_speed(time) 
-	// TODO Rewrite this code, nice that it work but... 
-	auto kb = m_keyboard->GetState();
-	if (kb.Escape)
+	
+	auto key_board = m_keyboard->GetState();
+	if (key_board.Escape)
 	{
 		ExitGame();
 	}
 	Vector2 move = {0, 0};
 	float boost = 1.f;
-	if (kb.LeftShift)
+	if (key_board.LeftShift)
 	{
 		boost = 3.f;
 	}
 	float rotateAngle = 0.f;
 
-	if (kb.W)
+	if (key_board.W)
 	{
 		move.y -= 1.f * boost;
 		m_object->setState(AnimatedTexture::UP);
 	}
-	if (kb.S)
+	if (key_board.S)
 	{
 		move.y += 1.f * boost;
 		m_object->setState(AnimatedTexture::DOWN);
 	}
-	if (kb.A)
+	if (key_board.A)
 	{
 		move.x -= 1.f * boost;
 		m_object->setState(AnimatedTexture::LEFT);
 	}
-	if (kb.D)
+	if (key_board.D)
 	{
 		move.x += 1.f * boost;
 		m_object->setState(AnimatedTexture::RIGHT);
@@ -117,21 +118,19 @@ void Game::Update(DX::StepTimer const& timer)
 	}*/
 	m_object->setRotation(rotateAngle);
 
-	m_objectPos += move; // TODO: make obj. copy instead extra function calling
-	m_walls->Update(move.y, m_levelParser->get_level_height(), m_levelParser->zero_pos().y);
-
-	RECT objectRect = {
-		m_objectPos.x - m_object->m_texture_width() / 2,
-		m_objectPos.y - m_object->m_texture_height() / 2,
-		m_objectPos.x + m_object->m_texture_width() / 2,
-		m_objectPos.y + m_object->m_texture_height() / 2
+	const RECT objectRect = {
+		m_objectPos.x + move.x - m_object->m_texture_width() / 2,
+		m_objectPos.y + move.y - m_object->m_texture_height() / 2,
+		m_objectPos.x + move.x + m_object->m_texture_width() / 2,
+		m_objectPos.y + move.y + m_object->m_texture_height() / 2
 	};
 
-
-	if (m_walls->IsIntersect(objectRect)) // O(walls)
+	// TODO: fix this, cancel only move.x || move.y
+	if (!m_walls->IsIntersect(objectRect)) // O(walls)
 	{
-		m_objectPos -= move; // TODO: fix this, cancel only move.x || move.y
-		m_walls->Update(-move.y, m_levelParser->get_level_height(), m_levelParser->zero_pos().y);
+		m_objectPos += move; 
+		m_walls->Update(move.y);
+		m_floor->Update(move.y);
 	}
 	
 
@@ -164,11 +163,8 @@ void Game::Render()
 	m_levelParser->AddWallsToDraw();
 	m_spriteBatch->Begin();
 	m_spriteBatch->Draw(m_background.Get(), m_fullscreenRect);
-	m_spriteBatch->Draw(m_floorTexture.Get(), m_floorPos, nullptr, Colors::White,
-	                    0.f, m_floorOrigin);
+	m_floor->Draw(m_spriteBatch.get());
 	m_walls->Draw(m_spriteBatch.get());
-
-	//m_stars->Draw(m_spriteBatch.get());
 
 	//m_spriteBatch->Draw(m_catTexture.Get(), m_screenPos, nullptr, Colors::White, cosf(time) * 4.f, m_floorOrigin, sinf(time) + 2.f); 
 	m_object->Draw(m_spriteBatch.get(), m_objectPos);
@@ -364,11 +360,13 @@ void Game::CreateDevice()
 	ComPtr<ID3D11Resource> resource;
 	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"wooden-floor.jpg",
 	                                           resource.GetAddressOf(), m_floorTexture.ReleaseAndGetAddressOf()));
+	m_floor = std::make_unique<ScrollingBackground>();
+	m_floor->Load(m_floorTexture.Get());
 	ComPtr<ID3D11Texture2D> floor;
 	DX::ThrowIfFailed(resource.As(&floor));
 	CD3D11_TEXTURE2D_DESC floorDesc;
 	floor->GetDesc(&floorDesc);
-
+	
 
 	m_floorOrigin.x = floorDesc.Width / 2.f;
 	m_floorOrigin.y = floorDesc.Height / 2.f;
@@ -495,12 +493,17 @@ void Game::CreateResources()
 	// stars
 	//m_stars->SetWindow(backBufferWidth, backBufferHeight);
 
+	m_walls->setWindowHeight(backBufferHeight);
+
 	// wooden_floor
+	m_floor->SetWindow(backBufferWidth, backBufferHeight, m_walls->getVerticalWidth());
 	m_floorPos.x = float(backBufferWidth / 2);
 	m_floorPos.y = float(backBufferHeight) - m_floorOrigin.y;
+	m_floorCount = int(float(backBufferHeight) / (2 * m_floorOrigin.y)) + 1;
 
 	// level parser
 	DirectX::SimpleMath::Vector2 zero = {backBufferWidth / 2.f - m_floorOrigin.x, (float)backBufferHeight};
+
 	if (m_levelParser)
 	{
 		m_levelParser->Update(zero);
@@ -509,6 +512,7 @@ void Game::CreateResources()
 	{
 		m_levelParser = std::make_unique<LevelParser>(zero, m_walls.get());
 	}
+	
 }
 
 
