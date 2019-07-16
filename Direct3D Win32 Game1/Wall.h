@@ -1,4 +1,5 @@
 #pragma once
+// TODO: Разнести .h и .cpp
 #include <stdexcept>
 #include <SpriteBatch.h>
 #include <vector>
@@ -28,7 +29,7 @@ public:
 		Wall wall(orientation, x, y, depth, rotation, origin, scale, effects);
 		for (int i = 0; i < count; i++) {
 			wall.x = (wall.Orientation == HORIZONTAL) ?  (x + BASIC_SCALE * i * mHorizontalWallTexture.TextureWidth) : x;
-			wall.y = (wall.Orientation == VERTICAL) ? (y+ BASIC_SCALE * i * mVerticalWallTexture.TextureHeight) : y;
+			wall.y = (wall.Orientation == VERTICAL) ? (y + BASIC_SCALE * i * mVerticalWallTexture.TextureHeight) : y;
 			mWalls.push_back(wall);
 		}
 	}
@@ -111,7 +112,13 @@ public:
 		mVerticalWallTexture.Texture.Reset();
 	}
 
+	void ClearWalls()
+	{
+		mWalls.clear();
+	}
+
 	// TODO: (intersection) How long ? Oprimization? 
+	
 	bool IsIntersect(RECT objectRect)
 	{
 		for (const auto& wall : mWalls)
@@ -133,11 +140,26 @@ public:
 				(LONG)(wall.x + mHorizontalWallTexture.TextureWidth * BASIC_SCALE - delta),
 				(LONG)(wall.y + mHorizontalWallTexture.TextureHeight * BASIC_SCALE - delta)};
 			}
-			if (IsIntersect(wallRect, objectRect)) return true;
+			if (IsIntersect(wallRect, objectRect))
+			{
+				return true; // TODO: Так идти вдоль стены не получается, нужно это как-то исправить
+			}
 
-			
 		}
 		return false;
+	}
+	float getVerticalHeight()
+	{
+		return mVerticalWallTexture.TextureHeight * BASIC_SCALE;
+	}
+	float getVerticalWidth()
+	{
+		return mVerticalWallTexture.TextureWidth * BASIC_SCALE;
+	}
+
+	void setScale(float floorWidth)
+	{
+		BASIC_SCALE = floorWidth / (9.f * mHorizontalWallTexture.TextureWidth);
 	}
 
 private:
@@ -150,7 +172,7 @@ private:
 		float											 TextureWidth;
 		float											 TextureHeight;
 	};
-	const float												BASIC_SCALE = 0.3f;  // TODO: make this static 
+	float												BASIC_SCALE = 0.3f;  // TODO: make this static 
 	WallTexture												mHorizontalWallTexture;   
 	WallTexture												mVerticalWallTexture;
 	std::vector<Wall>										mWalls;

@@ -16,6 +16,7 @@
     <ClInclude Include="expected.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="serviceLocator.h" />
+    <ClInclude Include="LevelParser.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -23,6 +24,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="serviceLocator.cpp" />
+    <ClCompile Include="LevelParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -52,6 +54,15 @@
     <Image Include="sidewall.png">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="turtles.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="barsuk.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="wooden-floor.jpg">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest">
@@ -60,5 +71,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="level.txt" />
   </ItemGroup>
 </Project>

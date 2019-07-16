@@ -30,8 +30,7 @@ void Game::Initialize(HWND window, int width, int height)
 	m_mouse = std::make_unique<Mouse>();
 	m_mouse->SetWindow(window);
 	m_keyboard = std::make_unique<Keyboard>();
-
-
+	
     CreateDevice();
 
     CreateResources();
@@ -41,7 +40,10 @@ void Game::Initialize(HWND window, int width, int height)
     
     m_timer.SetFixedTimeStep(true);
     m_timer.SetTargetElapsedSeconds(1.0 / 60);
-    
+
+	// level parser
+	m_levelParser->ReadLevelFile("level.txt");
+	
 }
 
 // Executes the basic game loop.
@@ -62,7 +64,7 @@ void Game::Update(DX::StepTimer const& timer)
 
     // TODO: Add your game logic here.
 
-	m_ship->Update(elapsedTime);
+	m_object->Update(elapsedTime);
 	//m_stars->Update((elapsedTime * 10)); // some function of star_speed(time) 
 	// TODO Rewrite this code, nice that it work but... 
 	auto kb = m_keyboard->GetState();
@@ -78,20 +80,20 @@ void Game::Update(DX::StepTimer const& timer)
 	
 	if (kb.W) {
 		move.y -= 1.f * boost;
-		rotateAngle = 0.f;
+		m_object->setState(AnimatedTexture::UP);
 	}
 	if (kb.S) {
 		move.y += 1.f * boost;
-		rotateAngle = XM_PI;
+		m_object->setState(AnimatedTexture::DOWN);
 	}
 	if (kb.A) {
 		move.x -= 1.f * boost;
-		rotateAngle = -XM_PI / 2;
+		m_object->setState(AnimatedTexture::LEFT);
 	}
 	if (kb.D) {
 		move.x += 1.f * boost;
-		rotateAngle = XM_PI / 2; 
-	}
+		m_object->setState(AnimatedTexture::RIGHT);
+	}/*
 	if (kb.W) {
 		if (kb.A) {
 			rotateAngle = -XM_PI / 4;
@@ -107,25 +109,26 @@ void Game::Update(DX::StepTimer const& timer)
 		if (kb.D) {
 			rotateAngle = XM_PI - XM_PI / 4;
 		}
-	}
-	m_ship->setRotation(rotateAngle);
+	}*/
+	m_object->setRotation(rotateAngle);
 
-	m_shipPos += move;
+	m_objectPos += move;
 
-	RECT shipRect = { m_shipPos.x - m_ship->m_texture_width() / 2,
-		m_shipPos.y - m_ship->m_texture_height() / 2,
-		m_shipPos.x + m_ship->m_texture_width() / 2,
-		m_shipPos.y + m_ship->m_texture_height() / 2 };
+	RECT objectRect = { m_objectPos.x - m_object->m_texture_width() / 2,
+		m_objectPos.y - m_object->m_texture_height() / 2,
+		m_objectPos.x + m_object->m_texture_width() / 2,
+		m_objectPos.y + m_object->m_texture_height() / 2 };
 
-	
-	if (m_walls->IsIntersect(shipRect))
+
+	if (m_walls->IsIntersect(objectRect)) // O(walls)
 	{
-		m_shipPos -= move; // TODO: fix this, cancel only move.x || move.y
-	}
+		m_objectPos -= move; // TODO: fix this, cancel only move.x || move.y
+	} 
+	
 
 	/*
-	if (!m_stars->InBackground(m_shipPos, m_ship->getFrameWidth())) {
-		m_shipPos.x -= move.x;
+	if (!m_stars->InBackground(m_objectPos, m_object->getFrameWidth())) {
+		m_objectPos.x -= move.x;
 	}
 
 	auto mouse = m_mouse->GetState();
@@ -149,16 +152,19 @@ void Game::Render()
     // TODO: Add your rendering code here.
 	// Cat.png
 	float time = float(m_timer.GetTotalSeconds());
-
+	m_levelParser->AddWallsToDraw();
 	m_spriteBatch->Begin();
 	m_spriteBatch->Draw(m_background.Get(), m_fullscreenRect);
+	m_spriteBatch->Draw(m_floorTexture.Get(), m_floorPos, nullptr, Colors::White,
+		0.f, m_floorOrigin);
 	m_walls->Draw(m_spriteBatch.get());
 
 	//m_stars->Draw(m_spriteBatch.get());
 
-	//m_spriteBatch->Draw(m_catTexture.Get(), m_screenPos, nullptr, Colors::White, cosf(time) * 4.f, m_origin, sinf(time) + 2.f); 
-	m_ship->Draw(m_spriteBatch.get(), m_shipPos); 
+	//m_spriteBatch->Draw(m_catTexture.Get(), m_screenPos, nullptr, Colors::White, cosf(time) * 4.f, m_floorOrigin, sinf(time) + 2.f); 
+	m_object->Draw(m_spriteBatch.get(), m_objectPos); 
 
+	
 	m_spriteBatch->End();
     Present();
 }
@@ -320,26 +326,44 @@ void Game::CreateDevice()
 	CD3D11_TEXTURE2D_DESC catDesc; 
 	cat->GetDesc(&catDesc);
 
-	m_origin.x = float(catDesc.Width / 2);
-	m_origin.y = float(catDesc.Height / 2);*/
+	m_floorOrigin.x = float(catDesc.Width / 2);
+	m_floorOrigin.y = float(catDesc.Height / 2);*/
 	
 	// background grass.jpg
 	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"grass.png", nullptr,
 		m_background.ReleaseAndGetAddressOf()));
 
 	// spaceship (animated) 
-	DX::ThrowIfFailed(CreateDDSTextureFromFile(m_d3dDevice.Get(), L"shipanimated.dds",
+	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"turtles.png",
 		nullptr, m_shipTexture.ReleaseAndGetAddressOf()));
 	
 	// walls 
 	// TODO: ѕодумать, а корректно ли передавать device в сторонние классы, не просто же так этого не делают
+	
 	m_walls = std::make_unique<WallsHandler>();
 	m_walls->Load(m_d3dDevice.Get()); 
-	m_walls->addWall(150, 150, 2, WallsHandler::HORIZONTAL);
-	m_walls->addWall(150, 150, 3, WallsHandler::VERTICAL); 
 	
-	m_ship = std::make_unique<AnimatedTexture>();
-	m_ship->Load(m_shipTexture.Get(), 4, 10); 
+	//m_walls->addWall(150, 150, 2, WallsHandler::HORIZONTAL);
+	//m_walls->addWall(150, 150, 3, WallsHandler::VERTICAL); 
+
+	// object
+	m_object = std::make_unique<AnimatedTexture>();
+	m_object->Load(m_shipTexture.Get(), 3, 4, 8); 
+
+	// wooden_floor
+	ComPtr<ID3D11Resource> resource;
+	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"wooden-floor.jpg",
+		resource.GetAddressOf(), m_floorTexture.ReleaseAndGetAddressOf()));
+	ComPtr<ID3D11Texture2D> floor;
+	DX::ThrowIfFailed(resource.As(&floor));
+	CD3D11_TEXTURE2D_DESC floorDesc;
+	floor->GetDesc(&floorDesc);
+
+
+	m_floorOrigin.x = floorDesc.Width / 2.f;
+	m_floorOrigin.y = floorDesc.Height / 2.f;
+
+	m_walls->setScale(floorDesc.Width);
 
 	/*// stars
 	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"starfield.png", nullptr,
@@ -452,11 +476,26 @@ void Game::CreateResources()
 	m_fullscreenRect.right = backBufferWidth;
 	m_fullscreenRect.bottom = backBufferHeight;
 	//spaceship 
-	m_shipPos.x = float(backBufferWidth / 2);
-	m_shipPos.y = float((backBufferHeight / 2) + (backBufferHeight / 4));
+	m_objectPos.x = float(backBufferWidth / 2);
+	m_objectPos.y = float((backBufferHeight / 2) + (backBufferHeight / 4));
 	// stars
 	//m_stars->SetWindow(backBufferWidth, backBufferHeight);
 
+	// wooden_floor
+	m_floorPos.x = float(backBufferWidth / 2);
+	m_floorPos.y = float(backBufferHeight) - m_floorOrigin.y;
+
+	// level parser
+	DirectX::SimpleMath::Vector2 zero = { backBufferWidth / 2.f - m_floorOrigin.x, (float)backBufferHeight };
+	if (m_levelParser)
+	{
+		m_levelParser->Update(zero);
+	}
+	else
+	{
+		m_levelParser = std::make_unique<LevelParser>(zero, m_walls.get());
+	}
+	
 }
 
 
@@ -477,7 +516,7 @@ void Game::OnDeviceLost()
 	
 	/*m_states.reset();
 	m_background.Reset();
-	m_ship.reset();
+	m_object.reset();
 	m_shipTexture.Reset();
 	m_stars.reset();
 	m_starsTexture.Reset();*/

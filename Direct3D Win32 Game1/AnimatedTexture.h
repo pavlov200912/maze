@@ -27,7 +27,7 @@ public:
 		mRotation(0.f),
 		mScale(1.f, 1.f),
 		mDepth(0.f),
-		mOrigin(0.f, 0.f), 
+		mOrigin(0.f, 0.f),
 		mEffects(DirectX::SpriteEffects_None)
 	{
 	}
@@ -50,7 +50,7 @@ public:
 	{
 	}
 
-	void Load(ID3D11ShaderResourceView* texture, int frameCount, int framesPerSecond)
+	void Load(ID3D11ShaderResourceView* texture, int frameCount, int stateCount, int framesPerSecond)
 	{
 		if (frameCount < 0 || framesPerSecond <= 0)
 			throw std::invalid_argument("AnimatedTexture");
@@ -58,6 +58,8 @@ public:
 		mPaused = false;
 		mFrame = 0;
 		mFrameCount = frameCount;
+		mStateCount = stateCount;
+		mState = DOWN;
 		mTimePerFrame = 1.f / float(framesPerSecond);
 		mTotalElapsed = 0.f;
 		mTexture = texture;
@@ -101,25 +103,25 @@ public:
 
 	void Draw(DirectX::SpriteBatch* batch, const DirectX::XMFLOAT2& screenPos) const
 	{
-		Draw(batch, mFrame, screenPos);
+		Draw(batch, mFrame, mState, screenPos);
 	}
 
 	float getFrameWidth() {
-		return float(mTextureWidth) / mFrameCount; 
+		return float(mTextureWidth) / mFrameCount;
 	}
 
-	void Draw(DirectX::SpriteBatch* batch, int frame, const DirectX::XMFLOAT2& screenPos) const
+	void Draw(DirectX::SpriteBatch* batch, int frame, int state, const DirectX::XMFLOAT2& screenPos) const
 	{
 		int frameWidth = mTextureWidth / mFrameCount;
-
+		int frameHeigth = mTextureHeight / mStateCount;
 		RECT sourceRect;
 		sourceRect.left = frameWidth * frame;
-		sourceRect.top = 0;
+		sourceRect.top = frameHeigth * state;
 		sourceRect.right = sourceRect.left + frameWidth;
-		sourceRect.bottom = mTextureHeight;
+		sourceRect.bottom = sourceRect.top + frameHeigth;
 		DirectX::XMFLOAT2 temp;
 		temp.x = frameWidth / 2;
-		temp.y = mTextureHeight / 2;
+		temp.y = frameHeigth / 2;
 		batch->Draw(mTexture.Get(), screenPos, &sourceRect, DirectX::Colors::White,
 			mRotation, temp, mScale, mEffects, mDepth);
 	}
@@ -128,9 +130,9 @@ public:
 		mRotation = x;
 	}
 
-	void isForward(bool forward) { 
-		if (!forward) mEffects = DirectX::SpriteEffects_FlipVertically; 
-		else	      mEffects = DirectX::SpriteEffects_None; 
+	void isForward(bool forward) {
+		if (!forward) mEffects = DirectX::SpriteEffects_FlipVertically;
+		else	      mEffects = DirectX::SpriteEffects_None;
 	}
 
 	void Reset()
@@ -153,10 +155,23 @@ public:
 
 	int m_texture_width() const; // TODO: codestyle 
 	int m_texture_height() const;
+
+	enum STATE {
+		DOWN = 0,
+		LEFT = 1,
+		RIGHT = 2,
+		UP = 3
+	};
+	void setState(STATE state)
+	{
+		mState = state;
+	}
 private:
 	bool                                                mPaused;
 	int                                                 mFrame;
 	int                                                 mFrameCount;
+	STATE												mState;
+	int													mStateCount;
 	int                                                 mTextureWidth;
 	int                                                 mTextureHeight;
 	float                                               mTimePerFrame;
@@ -176,5 +191,5 @@ inline int AnimatedTexture::m_texture_width() const
 
 inline int AnimatedTexture::m_texture_height() const
 {
-	return mTextureHeight;
+	return mTextureHeight / mStateCount;
 }
