@@ -34,15 +34,15 @@ private:
 	
 	struct WallInformation
 	{
-		bool isVertical;
-		int x;
-		int y;
-		int count;
+		bool	 isVertical;
+		int		 x;
+		int		 y;
+		int		 count;
 	};
 
 
 	DirectX::SimpleMath::Vector2 zeroPos;
-	WallsHandler* wallHandler; 
+	WallsHandler*				 wallHandler; 
 	std::vector<WallInformation> wallsToDraw;
 };
 

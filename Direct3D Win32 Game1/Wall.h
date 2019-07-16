@@ -172,7 +172,7 @@ private:
 		float											 TextureWidth;
 		float											 TextureHeight;
 	};
-	float												BASIC_SCALE = 0.3f;  // TODO: make this static 
+	float													BASIC_SCALE = 0.3f;  // TODO: make this static 
 	WallTexture												mHorizontalWallTexture;   
 	WallTexture												mVerticalWallTexture;
 	std::vector<Wall>										mWalls;

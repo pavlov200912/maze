@@ -77,20 +77,20 @@ private:
 	std::unique_ptr<DirectX::CommonStates> m_states;*/
 	
 	// grass.jpg
-	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
-	RECT m_fullscreenRect;
+	std::unique_ptr<DirectX::SpriteBatch>            m_spriteBatch;
+	RECT											 m_fullscreenRect;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_background;
 
 	// Walls 
-	std::unique_ptr<WallsHandler> m_walls;
+	std::unique_ptr<WallsHandler>					 m_walls;
 
 	// LevelParser
-	std::unique_ptr<LevelParser> m_levelParser;
+	std::unique_ptr<LevelParser>					 m_levelParser;
 
 	// spaceship (animated)
-	std::unique_ptr<AnimatedTexture> m_object;
+	std::unique_ptr<AnimatedTexture>				 m_object;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_shipTexture;
-	DirectX::SimpleMath::Vector2 m_objectPos;
+	DirectX::SimpleMath::Vector2					 m_objectPos;
 
 	// starfield 
 	/*std::unique_ptr<ScrollingBackground> m_stars;
@@ -98,10 +98,10 @@ private:
 	
 	// wooden_floor 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_floorTexture;
-	DirectX::SimpleMath::Vector2 m_floorPos;
-	DirectX::SimpleMath::Vector2 m_floorOrigin;
+	DirectX::SimpleMath::Vector2					 m_floorPos;
+	DirectX::SimpleMath::Vector2					 m_floorOrigin;
 
 	// keyboard and mouse 
-	std::unique_ptr<DirectX::Mouse> m_mouse;
-	std::unique_ptr<DirectX::Keyboard> m_keyboard;
+	std::unique_ptr<DirectX::Mouse>					 m_mouse;
+	std::unique_ptr<DirectX::Keyboard>				 m_keyboard;
 };
