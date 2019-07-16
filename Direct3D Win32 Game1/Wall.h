@@ -1,5 +1,5 @@
 #pragma once
-// TODO: Разнести .h и .cpp
+// TODO: Differ .h and .cpp
 #include <stdexcept>
 #include <SpriteBatch.h>
 #include <vector>
@@ -49,7 +49,7 @@ public:
 			temp = { heigth / 2, heigth / 2 };
 		}
 
-		batch->Draw(((wall.Orientation == VERTICAL) ? mVerticalWallTexture : mHorizontalWallTexture).Texture.Get(), // TODO: Nonereadable code
+		batch->Draw(((wall.Orientation == VERTICAL) ? mVerticalWallTexture : mHorizontalWallTexture).Texture.Get(), // TODO: unreadable code
 			{ wall.x, wall.y }, &sourceRect, DirectX::Colors::White,
 			wall.Rotation, temp, wall.Scale, wall.Effects, wall.Depth);
 	}
@@ -142,6 +142,8 @@ public:
 			}
 			if (IsIntersect(wallRect, objectRect))
 			{
+							 // (vanya translate) TODO: With this code, you can't walk close to the wall, 
+							 // you should somehow fix it. 
 				return true; // TODO: Так идти вдоль стены не получается, нужно это как-то исправить
 			}
 

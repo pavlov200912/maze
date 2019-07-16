@@ -338,6 +338,7 @@ void Game::CreateDevice()
 		nullptr, m_shipTexture.ReleaseAndGetAddressOf()));
 	
 	// walls 
+	// TODO: (vanya translate) Think about throwing a device in outer class, why samples avoid this? 
 	// TODO: Подумать, а корректно ли передавать device в сторонние классы, не просто же так этого не делают
 	
 	m_walls = std::make_unique<WallsHandler>();
@@ -511,7 +512,7 @@ void Game::OnDeviceLost()
 	//m_catTexture.Reset();
 	m_spriteBatch.reset();
 
-	m_walls->Reset(); // TODO: Эти две строчки не читаемы
+	m_walls->Reset(); // TODO: This is unreadable
 	m_walls.reset(); 
 	
 	/*m_states.reset();
