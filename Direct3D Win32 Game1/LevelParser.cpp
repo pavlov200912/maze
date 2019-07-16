@@ -17,6 +17,7 @@ void LevelParser::ReadLevelFile(std::string file_name) // TODO: should throw IO 
 		in.read(reinterpret_cast<char*>(&inf.y), sizeof(int));
 		in.read(reinterpret_cast<char*>(&inf.count), sizeof(int));
 		wallsToDraw.emplace_back(inf);
+		m_level_height = std::max(m_level_height, inf.y);
 		if (in.eof()) break;
 	}
 	in.close();
@@ -36,5 +37,15 @@ void LevelParser::AddWallsToDraw()
 		float y = zeroPos.y - wallHandler->getVerticalWidth() / 2 - wallHandler->getVerticalHeight() * inf.y;
 		wallHandler->addWall(x, y, inf.count, (inf.isVertical) ? WallsHandler::VERTICAL : WallsHandler::HORIZONTAL); 
 	}
+}
+
+int LevelParser::get_level_height() const
+{
+	return m_level_height;
+}
+
+DirectX::SimpleMath::Vector2 LevelParser::zero_pos() const
+{
+	return zeroPos;
 }
 

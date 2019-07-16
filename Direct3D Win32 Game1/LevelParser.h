@@ -23,6 +23,8 @@ public:
 		zeroPos = zero_pos;
 	}
 
+	int get_level_height() const;
+
 private:
 	void my_log(std::string message) 
 	{
@@ -40,7 +42,10 @@ private:
 		int		 count;
 	};
 
-
+public:
+	DirectX::SimpleMath::Vector2 zero_pos() const;
+private:
+	int							 m_level_height;
 	DirectX::SimpleMath::Vector2 zeroPos;
 	WallsHandler*				 wallHandler; 
 	std::vector<WallInformation> wallsToDraw;

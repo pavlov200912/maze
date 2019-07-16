@@ -117,8 +117,8 @@ void Game::Update(DX::StepTimer const& timer)
 	}*/
 	m_object->setRotation(rotateAngle);
 
-	m_objectPos += move;
-	m_walls->Update(move.y);
+	m_objectPos += move; // TODO: make obj. copy instead extra function calling
+	m_walls->Update(move.y, m_levelParser->get_level_height(), m_levelParser->zero_pos().y);
 
 	RECT objectRect = {
 		m_objectPos.x - m_object->m_texture_width() / 2,
@@ -131,7 +131,7 @@ void Game::Update(DX::StepTimer const& timer)
 	if (m_walls->IsIntersect(objectRect)) // O(walls)
 	{
 		m_objectPos -= move; // TODO: fix this, cancel only move.x || move.y
-		m_walls->Update(-move.y);
+		m_walls->Update(-move.y, m_levelParser->get_level_height(), m_levelParser->zero_pos().y);
 	}
 	
 

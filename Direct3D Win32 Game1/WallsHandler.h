@@ -60,7 +60,7 @@ public:
 		BASIC_SCALE = floorWidth / (9.f * m_horizontalWallTexture.TextureWidth);
 	}
 
-	void Update(float delta_y);
+	void Update(float delta_y, int level_height, float screen_height);
 
 private:
 

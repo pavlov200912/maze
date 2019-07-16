@@ -32,7 +32,6 @@ void WallsHandler::Draw(DirectX::SpriteBatch* batch, Wall wall) const
 		temp = { heigth / 2, heigth / 2 };
 	}
 	batch->Draw(((wall.Orientation == VERTICAL) ? m_verticalWallTexture : m_horizontalWallTexture).Texture.Get(),
-		// TODO: unreadable code
 		{ wall.x + m_centerPos.x, wall.y + m_centerPos.y}, &sourceRect, DirectX::Colors::White,
 		wall.Rotation, temp, wall.Scale, wall.Effects, wall.Depth);
 }
@@ -46,9 +45,13 @@ void WallsHandler::Draw(DirectX::SpriteBatch* batch) const
 }
 
 
-void WallsHandler::Update(float delta_y)
+void WallsHandler::Update(float delta_y, int level_height, float screen_height)
 {
-	m_centerPos.y -= delta_y;
+	float UPPER_BOUND = BASIC_SCALE * level_height * m_verticalWallTexture.TextureHeight - screen_height +
+		BASIC_SCALE * m_verticalWallTexture.TextureWidth;
+	if (m_centerPos.y - delta_y > 0 && m_centerPos.y - delta_y < UPPER_BOUND) {
+		m_centerPos.y -= delta_y;
+	}
 }
 
 void WallsHandler::Load(ID3D11Device* device)
@@ -166,7 +169,7 @@ void WallsHandler::my_log(std::string message)
 }
 
 
-inline WallsHandler::Wall::Wall(ORIENTATION orientation, float x, float y, float depth, float rotation,
+ WallsHandler::Wall::Wall(ORIENTATION orientation, float x, float y, float depth, float rotation,
 	const DirectX::XMFLOAT2& origin, const DirectX::XMFLOAT2& scale, DirectX::SpriteEffects effects)
 {
 	this->x = x;
