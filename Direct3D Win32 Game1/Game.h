@@ -6,6 +6,7 @@
 
 #include "StepTimer.h"
 #include "AnimatedTexture.h"
+#include "Door.h"
 #include "ScrollingBackground.h"
 #include "WallsHandler.h"
 #include "LevelParser.h"
@@ -102,6 +103,11 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_floorTexture;
 	DirectX::SimpleMath::Vector2 m_floorOrigin;
 	
+	// door
+	std::unique_ptr<Door> m_door;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_doorTexture;
+	DirectX::SimpleMath::Vector2 m_doorPos;
+	float m_y = 0;
 
 	// keyboard and mouse 
 	std::unique_ptr<DirectX::Mouse> m_mouse;

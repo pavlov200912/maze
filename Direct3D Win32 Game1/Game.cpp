@@ -66,6 +66,7 @@ void Game::Update(DX::StepTimer const& timer)
 	// TODO: Add your game logic here.
 
 	m_object->Update(elapsedTime);
+	m_door->Update(elapsedTime);
 	
 	auto key_board = m_keyboard->GetState();
 	if (key_board.Escape)
@@ -116,6 +117,14 @@ void Game::Update(DX::StepTimer const& timer)
 		m_objectPos += move; 
 		m_walls->Update(move.y);
 		m_floor->Update(move.y);
+		if (m_walls->inBounds(m_y - move.y)) {
+			m_y -= move.y;
+			m_doorPos.y -= move.y;
+		}
+	}
+
+	if (key_board.Enter && m_door->IsIntersect(objectRect, m_doorPos)) {
+		m_door->Play();
 	}
 
 
@@ -145,6 +154,7 @@ void Game::Render()
 	m_spriteBatch->Draw(m_background.Get(), m_fullscreenRect);
 	m_floor->Draw(m_spriteBatch.get());
 	m_walls->Draw(m_spriteBatch.get());
+	m_door->Draw(m_spriteBatch.get(), m_doorPos);
 
 	//m_spriteBatch->Draw(m_catTexture.Get(), m_screenPos, nullptr, Colors::White, cosf(time) * 4.f, m_floorOrigin, sinf(time) + 2.f); 
 	m_object->Draw(m_spriteBatch.get(), m_objectPos);
@@ -307,6 +317,8 @@ void Game::CreateDevice()
 	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"turtles.png",
 		nullptr, m_shipTexture.ReleaseAndGetAddressOf()));
 
+	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"door.png",
+		nullptr, m_doorTexture.ReleaseAndGetAddressOf()));
 	// walls 
 	// TODO: (vanya translate) Think about throwing a device in outer class, why samples avoid this? 
 	// TODO: ѕодумать, а корректно ли передавать device в сторонние классы, не просто же так этого не делают
@@ -318,6 +330,11 @@ void Game::CreateDevice()
 	// object
 	m_object = std::make_unique<AnimatedTexture>();
 	m_object->Load(m_shipTexture.Get(), 3, 4, 8);
+
+	// door
+	m_door = std::make_unique<Door>();
+	m_door->Load(m_doorTexture.Get(), 5, 1, 4);
+	m_door->Paused();
 
 	// wooden_floor
 	ComPtr<ID3D11Resource> resource;
@@ -446,6 +463,10 @@ void Game::CreateResources()
 	m_objectPos.y = float((backBufferHeight / 2) + (backBufferHeight / 4));
 	
 	m_walls->setWindowHeight(backBufferHeight);
+
+	// door
+	m_doorPos.x = backBufferWidth / 2.f - 328;
+	m_doorPos.y = (float)backBufferHeight - 341.5;
 
 	// wooden_floor
 	m_floor->SetWindow(backBufferWidth, backBufferHeight, m_walls->getVerticalWidth());

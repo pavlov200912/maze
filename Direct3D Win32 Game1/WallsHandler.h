@@ -66,9 +66,9 @@ public:
 
 	void setLevelHeight(int count);
 	float getLevelHeight() const;
-private:
-	bool inBounds(int y) const;
 
+	bool inBounds(int y) const;
+private:
 	static void my_log(std::string message);
 
 	static bool IsIntersect(const RECT& a, const RECT& b);

@@ -22,7 +22,7 @@
     <RootNamespace>Direct3D_Win32_Game1</RootNamespace>
     <ProjectGuid>{bd7d1930-607f-4c22-a48a-ec4a06c25873}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -155,6 +155,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AnimatedTexture.h" />
+    <ClInclude Include="Door.h" />
     <ClInclude Include="expected.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="LevelParser.h" />
@@ -166,6 +167,8 @@
     <ClInclude Include="StepTimer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnimatedTexture.cpp" />
+    <ClCompile Include="Door.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="LevelParser.cpp" />
     <ClCompile Include="log.cpp" />
@@ -187,6 +190,7 @@
     <Image Include="cat.DDS" />
     <Image Include="cat.png" />
     <Image Include="directx.ico" />
+    <Image Include="door.png" />
     <Image Include="shipanimated.dds" />
     <Image Include="sidewall.png" />
     <Image Include="starfield.png" />

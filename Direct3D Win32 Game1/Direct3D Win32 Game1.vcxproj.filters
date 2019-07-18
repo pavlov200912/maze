@@ -17,6 +17,7 @@
     <ClInclude Include="serviceLocator.h" />
     <ClInclude Include="LevelParser.h" />
     <ClInclude Include="WallsHandler.h" />
+    <ClInclude Include="Door.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -26,6 +27,8 @@
     <ClCompile Include="serviceLocator.cpp" />
     <ClCompile Include="LevelParser.cpp" />
     <ClCompile Include="WallsHandler.cpp" />
+    <ClCompile Include="AnimatedTexture.cpp" />
+    <ClCompile Include="Door.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -62,6 +65,9 @@
       <Filter>Assets</Filter>
     </Image>
     <Image Include="wooden-floor.jpg">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="door.png">
       <Filter>Assets</Filter>
     </Image>
   </ItemGroup>
