@@ -8,8 +8,8 @@ Handler::Handler()
 }
 
 void Handler::Update(float elapsed) {
-	for (int i = 0; i < mDoors.size(); ++i)
-		mDoors[i]->Update(elapsed);
+	for (int i = 0; i < mTextures.size(); ++i)
+		mTextures[i]->Update(elapsed);
 }
 
 void Handler::UpdateOffset(float delta_y) {
@@ -23,14 +23,22 @@ bool Handler::inBounds(float y) const {
 }
 
 void Handler::Play(RECT objectRect) {
-	for (int i = 0; i < mDoors.size(); i++)
-		if (mDoors[i]->IsIntersect(objectRect, { mCenter.x + mOffset.x - mPositions[i].x, mCenter.y + mOffset.y - mPositions[i].y }))
-			mDoors[i]->Play();
+	for (int i = 0; i < mTextures.size(); i++)
+		if (mTextures[i]->IsIntersect(objectRect, { mCenter.x + mOffset.x - mPositions[i].x, mCenter.y + mOffset.y - mPositions[i].y }))
+			mTextures[i]->Play();
+}
+
+bool Handler::IsIntersect(RECT objectRect) {
+	for (int i = 0; i < mTextures.size(); ++i) {
+		if (!mTextures[i]->IsAvailable() && mTextures[i]->IsIntersect(objectRect, { mCenter.x + mOffset.x - mPositions[i].x, mCenter.y + mOffset.y - mPositions[i].y }))
+			return true;
+	}
+	return false;
 }
 
 void Handler::Draw(DirectX::SpriteBatch* batch) {
-	for (int i = 0; i < mDoors.size(); i++)
-		mDoors[i]->Draw(batch, { mCenter.x + mOffset.x - mPositions[i].x, mCenter.y + mOffset.y - mPositions[i].y });
+	for (int i = 0; i < mTextures.size(); i++)
+		mTextures[i]->Draw(batch, { mCenter.x + mOffset.x - mPositions[i].x, mCenter.y + mOffset.y - mPositions[i].y });
 }
 
 void Handler::setWindowHeight(float windowHeight) {

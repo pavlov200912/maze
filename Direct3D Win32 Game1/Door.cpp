@@ -25,3 +25,7 @@ bool Door::IsIntersect(RECT objectRect, const DirectX::XMFLOAT2& screenPos) cons
 	return (objectRect.left < doorRect.right && objectRect.right > doorRect.left &&
 		objectRect.top < doorRect.bottom && objectRect.bottom> doorRect.top);
 }
+
+bool Door::IsAvailable() const {
+	return mFrame == mFrameCount - 1;
+}

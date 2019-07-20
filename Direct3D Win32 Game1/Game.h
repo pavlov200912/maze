@@ -55,6 +55,7 @@ private:
 	void CreateResources();
 
 	void OnDeviceLost();
+	void LoadDoors();
 
 	// Device resources.
 	HWND m_window;
@@ -106,7 +107,8 @@ private:
 	
 	// door
 	std::unique_ptr<Handler> m_doorsHandler;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_doorTexture;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_verticalDoorTexture;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_horizontalDoorTexture;
 	std::vector<DirectX::SimpleMath::Vector2> m_positions;
 
 	// keyboard and mouse 

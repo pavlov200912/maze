@@ -49,12 +49,7 @@ void Game::Initialize(HWND window, int width, int height)
 	m_doorsHandler->setLevelHeight(m_walls->getLevelHeight());
 
 	// door
-	m_doorsHandler->mPositions =  { {100, 100}, {200, 200}, {100, 200}, {200, 100}};
-	for (int i = 0; i < 4; i++) {
-		m_doorsHandler->mDoors.push_back(std::make_unique<Door>());
-		m_doorsHandler->mDoors[i]->Load(m_doorTexture.Get(), 5, 1, 4);
-		m_doorsHandler->mDoors[i]->Paused();
-	}
+	LoadDoors();
 }
 
 // Executes the basic game loop.
@@ -122,7 +117,7 @@ void Game::Update(DX::StepTimer const& timer)
 	};
 
 	// TODO: fix this, cancel only move.x || move.y
-	if (!m_walls->IsIntersect(objectRect)) // O(walls)
+	if (!m_walls->IsIntersect(objectRect) && !m_doorsHandler->IsIntersect(objectRect)) // O(walls)
 	{
 		m_objectPos += move; 
 		m_walls->Update(move.y);
@@ -323,8 +318,11 @@ void Game::CreateDevice()
 	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"turtles.png",
 		nullptr, m_shipTexture.ReleaseAndGetAddressOf()));
 
-	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"door.png",
-		nullptr, m_doorTexture.ReleaseAndGetAddressOf()));
+	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"verticaldoor.png",
+		nullptr, m_verticalDoorTexture.ReleaseAndGetAddressOf()));
+
+	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"horizontaldoor.png",
+		nullptr, m_horizontalDoorTexture.ReleaseAndGetAddressOf()));
 	// walls 
 	// TODO: (vanya translate) Think about throwing a device in outer class, why samples avoid this? 
 	// TODO: ѕодумать, а корректно ли передавать device в сторонние классы, не просто же так этого не делают
@@ -508,4 +506,23 @@ void Game::OnDeviceLost()
 	CreateDevice();
 
 	CreateResources();
+}
+
+void Game::LoadDoors() {
+	std::vector<DirectX::SimpleMath::Vector2> verticalDoorsCoordinates = { {328, 342}, {-335, 77} };
+	std::vector<DirectX::SimpleMath::Vector2> horizontalDoorsCoordinates = { {130, 408} };
+	for (int i = 0; i < verticalDoorsCoordinates.size(); i++)
+		m_doorsHandler->mPositions.push_back(verticalDoorsCoordinates[i]);
+	for (int i = 0; i < m_doorsHandler->mPositions.size(); i++) {
+		m_doorsHandler->mTextures.push_back(std::make_unique<Door>());
+		m_doorsHandler->mTextures[i]->Load(m_verticalDoorTexture.Get(), 5, 1, 4);
+		m_doorsHandler->mTextures[i]->Paused();
+	}
+	for (int i = 0; i < horizontalDoorsCoordinates.size(); i++)
+		m_doorsHandler->mPositions.push_back(horizontalDoorsCoordinates[i]);
+	for (int i = verticalDoorsCoordinates.size(); i < m_doorsHandler->mPositions.size(); i++) {
+		m_doorsHandler->mTextures.push_back(std::make_unique<Door>());
+		m_doorsHandler->mTextures[i]->Load(m_horizontalDoorTexture.Get(), 5, 1, 4);
+		m_doorsHandler->mTextures[i]->Paused();
+	}
 }

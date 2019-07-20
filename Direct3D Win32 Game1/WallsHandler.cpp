@@ -199,3 +199,4 @@ void WallsHandler::my_log(std::string message)
 	this->Origin = origin;
 }
 
+ 

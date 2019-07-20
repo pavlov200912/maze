@@ -140,7 +140,7 @@ void AnimatedTexture::Play() { mPaused = false; }
 void AnimatedTexture::Paused() { mPaused = true; }
 
 bool AnimatedTexture::IsPaused() const { return mPaused; }
-
+bool AnimatedTexture::IsAvailable() const { return true; }
 void AnimatedTexture::setState(STATE state)
 {
 	mState = state;

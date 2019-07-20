@@ -69,7 +69,10 @@
     <Image Include="wooden-floor.jpg">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="door.png">
+    <Image Include="verticaldoor.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="horizontaldoor.png">
       <Filter>Assets</Filter>
     </Image>
   </ItemGroup>

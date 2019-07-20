@@ -192,7 +192,8 @@
     <Image Include="cat.DDS" />
     <Image Include="cat.png" />
     <Image Include="directx.ico" />
-    <Image Include="door.png" />
+    <Image Include="horizontaldoor.png" />
+    <Image Include="verticaldoor.png" />
     <Image Include="shipanimated.dds" />
     <Image Include="sidewall.png" />
     <Image Include="starfield.png" />
