@@ -18,6 +18,7 @@
     <ClInclude Include="LevelParser.h" />
     <ClInclude Include="WallsHandler.h" />
     <ClInclude Include="Door.h" />
+    <ClInclude Include="Handler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -29,6 +30,7 @@
     <ClCompile Include="WallsHandler.cpp" />
     <ClCompile Include="AnimatedTexture.cpp" />
     <ClCompile Include="Door.cpp" />
+    <ClCompile Include="Handler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

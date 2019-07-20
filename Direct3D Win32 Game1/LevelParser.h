@@ -3,6 +3,7 @@
 /// Принимает на вход абсолютные координаты относительного нуля, указатель на объект Wall
 #include "pch.h"
 #include "WallsHandler.h"
+#include "Handler.h"
 
 
 //TODO: Add Exceptions
@@ -18,6 +19,7 @@ public:
 
 	void ReadLevelFile(std::string file_name);
 	void AddWallsToDraw();
+	void AddTexturesToDraw();
 	void Update(const DirectX::SimpleMath::Vector2& zero_pos)
 	{
 		zeroPos = zero_pos;
@@ -48,6 +50,7 @@ private:
 	int							 m_level_height;
 	DirectX::SimpleMath::Vector2 zeroPos;
 	WallsHandler*				 wallHandler; 
+	Handler* textureHandler;
 	std::vector<WallInformation> wallsToDraw;
 };
 

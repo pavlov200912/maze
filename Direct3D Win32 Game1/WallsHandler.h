@@ -33,7 +33,7 @@ public:
 	             // TODO: fix magic const
 	             DirectX::SpriteEffects effects = DirectX::SpriteEffects_None);
 
-	void Draw(DirectX::SpriteBatch* batch, Wall wall) const;
+	void Draw(DirectX::SpriteBatch* batch, Wall* wall) const;
 
 	void Draw(DirectX::SpriteBatch* batch) const;
 
@@ -66,9 +66,9 @@ public:
 
 	void setLevelHeight(int count);
 	float getLevelHeight() const;
-
-	bool inBounds(int y) const;
 private:
+	bool inBounds(int y) const;
+
 	static void my_log(std::string message);
 
 	static bool IsIntersect(const RECT& a, const RECT& b);
@@ -83,7 +83,7 @@ private:
 	float BASIC_SCALE = 0.3f; // TODO: make this static 
 	WallTexture m_horizontalWallTexture;
 	WallTexture m_verticalWallTexture;
-	std::vector<Wall> m_walls;
+	std::vector<std::unique_ptr<Wall>> m_walls;
 	DirectX::XMFLOAT2 m_centerPos = {0, 0}; 
 	float m_screenHeight;
 	float m_levelHeight;

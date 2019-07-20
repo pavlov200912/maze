@@ -30,6 +30,7 @@ void Game::Initialize(HWND window, int width, int height)
 	m_mouse = std::make_unique<Mouse>();
 	m_mouse->SetWindow(window);
 	m_keyboard = std::make_unique<Keyboard>();
+	m_doorsHandler = std::make_unique<Handler>();
 
 	CreateDevice();
 
@@ -45,6 +46,15 @@ void Game::Initialize(HWND window, int width, int height)
 	m_levelParser->ReadLevelFile("level.txt");
 	m_walls->setLevelHeight(m_levelParser->get_level_height());
 	m_floor->setLevelHeight(m_walls->getLevelHeight());
+	m_doorsHandler->setLevelHeight(m_walls->getLevelHeight());
+
+	// door
+	m_doorsHandler->mPositions =  { {100, 100}, {200, 200}, {100, 200}, {200, 100}};
+	for (int i = 0; i < 4; i++) {
+		m_doorsHandler->mDoors.push_back(std::make_unique<Door>());
+		m_doorsHandler->mDoors[i]->Load(m_doorTexture.Get(), 5, 1, 4);
+		m_doorsHandler->mDoors[i]->Paused();
+	}
 }
 
 // Executes the basic game loop.
@@ -66,7 +76,7 @@ void Game::Update(DX::StepTimer const& timer)
 	// TODO: Add your game logic here.
 
 	m_object->Update(elapsedTime);
-	m_door->Update(elapsedTime);
+	m_doorsHandler->Update(elapsedTime);
 	
 	auto key_board = m_keyboard->GetState();
 	if (key_board.Escape)
@@ -117,16 +127,12 @@ void Game::Update(DX::StepTimer const& timer)
 		m_objectPos += move; 
 		m_walls->Update(move.y);
 		m_floor->Update(move.y);
-		if (m_walls->inBounds(m_y - move.y)) {
-			m_y -= move.y;
-			m_doorPos.y -= move.y;
-		}
+		m_doorsHandler->UpdateOffset(move.y);
 	}
 
-	if (key_board.Enter && m_door->IsIntersect(objectRect, m_doorPos)) {
-		m_door->Play();
+	if (key_board.Enter) {
+		m_doorsHandler->Play(objectRect);
 	}
-
 
 	/*auto mouse = m_mouse->GetState();
 	if (mouse.leftButton) {
@@ -154,7 +160,7 @@ void Game::Render()
 	m_spriteBatch->Draw(m_background.Get(), m_fullscreenRect);
 	m_floor->Draw(m_spriteBatch.get());
 	m_walls->Draw(m_spriteBatch.get());
-	m_door->Draw(m_spriteBatch.get(), m_doorPos);
+	m_doorsHandler->Draw(m_spriteBatch.get());
 
 	//m_spriteBatch->Draw(m_catTexture.Get(), m_screenPos, nullptr, Colors::White, cosf(time) * 4.f, m_floorOrigin, sinf(time) + 2.f); 
 	m_object->Draw(m_spriteBatch.get(), m_objectPos);
@@ -331,11 +337,6 @@ void Game::CreateDevice()
 	m_object = std::make_unique<AnimatedTexture>();
 	m_object->Load(m_shipTexture.Get(), 3, 4, 8);
 
-	// door
-	m_door = std::make_unique<Door>();
-	m_door->Load(m_doorTexture.Get(), 5, 1, 4);
-	m_door->Paused();
-
 	// wooden_floor
 	ComPtr<ID3D11Resource> resource;
 	DX::ThrowIfFailed(CreateWICTextureFromFile(m_d3dDevice.Get(), L"wooden-floor.jpg",
@@ -465,8 +466,9 @@ void Game::CreateResources()
 	m_walls->setWindowHeight(backBufferHeight);
 
 	// door
-	m_doorPos.x = backBufferWidth / 2.f - 328;
-	m_doorPos.y = (float)backBufferHeight - 341.5;
+	m_doorsHandler->setWindowHeight(backBufferHeight);
+	m_doorsHandler->mCenter.x = backBufferWidth / 2.f;
+	m_doorsHandler->mCenter.y = (float)backBufferHeight;
 
 	// wooden_floor
 	m_floor->SetWindow(backBufferWidth, backBufferHeight, m_walls->getVerticalWidth());

@@ -24,9 +24,6 @@ void LevelParser::ReadLevelFile(std::string file_name) // TODO: should throw IO 
 }
 
 
-
-
-
 void LevelParser::AddWallsToDraw()
 {
 	// TODO: Draw only necessary walls, check screen scrolling (somehow?)
@@ -37,6 +34,11 @@ void LevelParser::AddWallsToDraw()
 		float y = zeroPos.y - wallHandler->getVerticalWidth() / 2 - wallHandler->getVerticalHeight() * inf.y;
 		wallHandler->addWall(x, y, inf.count, (inf.isVertical) ? WallsHandler::VERTICAL : WallsHandler::HORIZONTAL); 
 	}
+}
+
+void LevelParser::AddTexturesToDraw()
+{
+	//textureHandler->Clear();
 }
 
 int LevelParser::get_level_height() const

@@ -10,6 +10,7 @@
 #include "ScrollingBackground.h"
 #include "WallsHandler.h"
 #include "LevelParser.h"
+#include "Handler.h"
 
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.
@@ -104,10 +105,9 @@ private:
 	DirectX::SimpleMath::Vector2 m_floorOrigin;
 	
 	// door
-	std::unique_ptr<Door> m_door;
+	std::unique_ptr<Handler> m_doorsHandler;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_doorTexture;
-	DirectX::SimpleMath::Vector2 m_doorPos;
-	float m_y = 0;
+	std::vector<DirectX::SimpleMath::Vector2> m_positions;
 
 	// keyboard and mouse 
 	std::unique_ptr<DirectX::Mouse> m_mouse;

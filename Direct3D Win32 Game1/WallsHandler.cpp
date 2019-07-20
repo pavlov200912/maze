@@ -4,26 +4,25 @@
 void WallsHandler::addWall(float x, float y, int count, ORIENTATION orientation, float depth, float rotation,
 	DirectX::XMFLOAT2 origin, DirectX::XMFLOAT2 scale, DirectX::SpriteEffects effects)
 {
-	Wall wall(orientation, x, y, depth, rotation, origin, scale, effects);
 	for (int i = 0; i < count; i++)
 	{
-		wall.x = (wall.Orientation == HORIZONTAL) ? (x + BASIC_SCALE * i * m_horizontalWallTexture.TextureWidth) : x;
-		wall.y = (wall.Orientation == VERTICAL) ? (y + BASIC_SCALE * i * m_verticalWallTexture.TextureHeight) : y;
-		m_walls.push_back(wall);
+		float wall_x = (orientation == HORIZONTAL) ? (x + BASIC_SCALE * i * m_horizontalWallTexture.TextureWidth) : x;
+		float wall_y = (orientation == VERTICAL) ? (y + BASIC_SCALE * i * m_verticalWallTexture.TextureHeight) : y;
+		m_walls.push_back(std::make_unique<Wall>(orientation, wall_x, wall_y, depth, rotation, origin, scale, effects));
 	}
 }
 
-void WallsHandler::Draw(DirectX::SpriteBatch* batch, Wall wall) const
+void WallsHandler::Draw(DirectX::SpriteBatch* batch, Wall* wall) const
 {
-	float width = (wall.Orientation == VERTICAL)
+	float width = (wall->Orientation == VERTICAL)
 		? (m_verticalWallTexture.TextureWidth)
 		: (m_horizontalWallTexture.TextureWidth);
-	float heigth = (wall.Orientation == VERTICAL)
+	float heigth = (wall->Orientation == VERTICAL)
 		? (m_verticalWallTexture.TextureHeight)
 		: (m_horizontalWallTexture.TextureHeight);
 	RECT sourceRect = { 0, 0, width, heigth };
 	DirectX::XMFLOAT2 temp;
-	if (wall.Orientation == VERTICAL)
+	if (wall->Orientation == VERTICAL)
 	{
 		temp = { width / 2, width / 2 };
 	}
@@ -31,16 +30,16 @@ void WallsHandler::Draw(DirectX::SpriteBatch* batch, Wall wall) const
 	{
 		temp = { heigth / 2, heigth / 2 };
 	}
-	batch->Draw(((wall.Orientation == VERTICAL) ? m_verticalWallTexture : m_horizontalWallTexture).Texture.Get(),
-		{ wall.x + m_centerPos.x, wall.y + m_centerPos.y}, &sourceRect, DirectX::Colors::White,
-		wall.Rotation, temp, wall.Scale, wall.Effects, wall.Depth);
+	batch->Draw(((wall->Orientation == VERTICAL) ? m_verticalWallTexture : m_horizontalWallTexture).Texture.Get(),
+		{ wall->x + m_centerPos.x, wall->y + m_centerPos.y}, &sourceRect, DirectX::Colors::White,
+		wall->Rotation, temp, wall->Scale, wall->Effects, wall->Depth);
 }
 
 void WallsHandler::Draw(DirectX::SpriteBatch* batch) const
 {
-	for (auto wall : m_walls)
+	for (const auto &wall : m_walls)
 	{
-		Draw(batch, wall);
+		Draw(batch, wall.get());
 	}
 }
 
@@ -138,30 +137,30 @@ void WallsHandler::ClearWalls()
 
 bool WallsHandler::IsIntersect(RECT objectRect)
 {
-	for (auto& wall : m_walls)
+	for (const auto &wall : m_walls)
 	{
 		// TODO: make this in diff. function
-		wall.y += m_centerPos.y;
+		wall->y += m_centerPos.y;
 		LONG delta = m_verticalWallTexture.TextureWidth * BASIC_SCALE / 2;
 		RECT wallRect = {0, 0, 0, 0}; // TODO: LONG TO FLOAT CONVERSION! FIX!
 
-		if (wall.Orientation == VERTICAL)
+		if (wall->Orientation == VERTICAL)
 		{
 			wallRect = {
-				(LONG)wall.x - delta, (LONG)wall.y - delta,
-				(LONG)(wall.x + m_verticalWallTexture.TextureWidth * BASIC_SCALE - delta),
-				(LONG)(wall.y + m_verticalWallTexture.TextureHeight * BASIC_SCALE - delta)
+				(LONG)wall->x - delta, (LONG)wall->y - delta,
+				(LONG)(wall->x + m_verticalWallTexture.TextureWidth * BASIC_SCALE - delta),
+				(LONG)(wall->y + m_verticalWallTexture.TextureHeight * BASIC_SCALE - delta)
 			};
 		}
 		else
 		{
 			wallRect = {
-				(LONG)wall.x - delta, (LONG)wall.y - delta,
-				(LONG)(wall.x + m_horizontalWallTexture.TextureWidth * BASIC_SCALE - delta),
-				(LONG)(wall.y + m_horizontalWallTexture.TextureHeight * BASIC_SCALE - delta)
+				(LONG)wall->x - delta, (LONG)wall->y - delta,
+				(LONG)(wall->x + m_horizontalWallTexture.TextureWidth * BASIC_SCALE - delta),
+				(LONG)(wall->y + m_horizontalWallTexture.TextureHeight * BASIC_SCALE - delta)
 			};
 		}
-		wall.y -= m_centerPos.y;
+		wall->y -= m_centerPos.y;
 		if (IsIntersect(wallRect, objectRect))
 		{
 			// (vanya translate) TODO: With this code, you can't walk close to the wall, 

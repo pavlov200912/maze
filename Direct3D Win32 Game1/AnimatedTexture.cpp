@@ -145,3 +145,7 @@ void AnimatedTexture::setState(STATE state)
 {
 	mState = state;
 }
+
+bool AnimatedTexture::IsIntersect(RECT objectRect, const DirectX::XMFLOAT2& screenPos) const {
+	return true;
+}

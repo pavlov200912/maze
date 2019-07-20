@@ -158,6 +158,7 @@
     <ClInclude Include="Door.h" />
     <ClInclude Include="expected.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Handler.h" />
     <ClInclude Include="LevelParser.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="serviceLocator.h" />
@@ -170,6 +171,7 @@
     <ClCompile Include="AnimatedTexture.cpp" />
     <ClCompile Include="Door.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Handler.cpp" />
     <ClCompile Include="LevelParser.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="Main.cpp" />

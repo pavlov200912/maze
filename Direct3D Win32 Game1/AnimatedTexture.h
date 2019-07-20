@@ -33,6 +33,7 @@ public:
 	void Play();
 	void Paused();
 	bool IsPaused() const;
+	virtual bool IsIntersect(RECT objectRect, const DirectX::XMFLOAT2& screenPos) const;
 
 	int m_texture_width() const; // TODO: codestyle 
 	int m_texture_height() const;
